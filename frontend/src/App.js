@@ -29,8 +29,8 @@ class App extends Component {
   }
   sendRegisterform = (event) => {
     event.preventDefault();
+    this.setState({ websiteNr: 2 })
     console.log('Send info', this.state);
-
   }
   onChangeHandler = (event) => {
     let key = event.target.name;
@@ -38,9 +38,44 @@ class App extends Component {
     this.setState({ [key]: val });
     console.log(key, val)
   }
-  teamButtonChange = (event) => {
+  onButtonChange = (event) => {
+    let key = event.target.name;
     let team = event.target.checked;
-    console.log(team)
+    this.setState({ [key]: team });
+  }
+  showPerson2 = () => {
+    return (
+      <React.Fragment>
+        Person 2<br></br>
+        <label>Vorname:
+          <input type='text' name='p2_first' onChange={this.onChangeHandler}></input>
+        </label><br></br>
+        <label>Nachname:
+          <input type='text' name='p2_last' onChange={this.onChangeHandler}></input>
+        </label><br></br>
+        <label>Handynummer:
+          <input type='text' name='p2_mobil' onChange={this.onChangeHandler}></input>
+        </label><br></br>
+        <label>Unverträglichkeiten/Einschränkungen:
+          <input type='text' name='p2_allergy' onChange={this.onChangeHandler}></input>
+        </label><br></br>
+      </React.Fragment>
+    );
+  }
+  showKitchenAddress = () => {
+    return (
+      <React.Fragment>
+        <label>Straße:
+          <input type='text' name='street' onChange={this.onChangeHandler}></input>
+        </label><br></br>
+        <label>Hausnummer:
+          <input type='text' name='number' onChange={this.onChangeHandler}></input>
+        </label><br></br>
+        <label>PLZ:
+          <input type='text' name='postal' onChange={this.onChangeHandler}></input>
+        </label><br></br>
+      </React.Fragment>
+    )
   }
 
   render() {
@@ -87,11 +122,26 @@ class App extends Component {
                 <input type='text' name='p1_allergy' onChange={this.onChangeHandler}></input>
               </label><br></br>
               <label>Ich möchte mit einem bestimmten Engel zusammenarbeiten
-                <input type='checkbox' name='isTeam' onChange={this.teamButtonChange}></input><br></br>
+                <input type='checkbox' name='isTeam' onChange={this.onButtonChange}></input><br></br>
+              </label>
+              {this.state.isTeam ? this.showPerson2() : null}
+              <label>Mir steht eine Küche zur Verfügung
+                <input type='checkbox' name='kitchen' onChange={this.onButtonChange}></input><br></br>
+              </label>
+              {this.state.kitchen ? this.showKitchenAddress() : null}
+              <label>Ich möchte nur bekannte Engel treffen
+                <input type='checkbox' name='covid' onChange={this.onButtonChange}></input><br></br>
               </label>
               <button type='submit'>Jetzt anmelden</button>
             </form>
           </div>
+        </div>
+      )
+    }
+    if (this.state.websiteNr === 2) {
+      return (
+        <div className='welcomePage'>
+          <h1>3 Gänge für Charly</h1>
         </div>
       )
     }
