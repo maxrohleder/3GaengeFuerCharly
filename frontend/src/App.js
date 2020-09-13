@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import './App.css';
 
+const API_URL = 'https://gaengefuercharly.ew.r.appspot.com/register';
+
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      websiteNr: 1,
+      websiteNr: 0,
       p1_first: '',
       p1_last: '',
       p1_mobil: '',
@@ -20,6 +23,7 @@ class App extends Component {
       number: '',
       postal: '',
       covid: '',
+      registerSuccess: false,
     };
   }
   goToRegisterPage = () => {
@@ -29,12 +33,49 @@ class App extends Component {
   }
   sendRegisterform = (event) => {
     event.preventDefault();
-    this.setState({ websiteNr: 2 })
-    console.log('Send info', this.state);
+    var payload = JSON.stringify({
+      person1: {
+        first: this.state.p1_first,
+        last: this.state.p1_last,
+        mobil: this.state.p1_mobil,
+        allergy: this.state.p1_allergy,
+      },
+      isTeam: this.state.isTeam,
+      person2: {
+        first: this.state.p2_first,
+        last: this.state.p2_last,
+        mobil: this.state.p2_mobil,
+        allergy: this.state.p2_allergy,
+      },
+      kitchen: this.state.kitchen,
+      address: {
+        street: this.state.street,
+        number: this.state.number,
+        postal: this.state.postal,
+      },
+      covid: this.state.covid,
+    });
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload,
+    }
+    fetch(API_URL, requestOptions).then((response) => response.json()).then((data) => {
+      console.log(data);
+      this.setState({
+        registerSuccess: data.isNew,
+      })
+      if (data.isNew) {
+        this.setState({ websiteNr: 2 })
+      }
+    }).catch((err) => {
+      console.log('Something went wrong during the registration', err)
+    })
   }
   onChangeHandler = (event) => {
     let key = event.target.name;
     let val = event.target.value;
+
     this.setState({ [key]: val });
     console.log(key, val)
   }
@@ -142,6 +183,14 @@ class App extends Component {
       return (
         <div className='welcomePage'>
           <h1>3 Gänge für Charly</h1>
+          <div className='finished'>
+            <p>
+              Herzlichen Glückwunsch, deine Anmeldung war erfolgreich!<br></br><br></br>
+              Du erhälst im Laufe der kommenden Woche eine SMS mit dem Namen deines Teampartners, eurem Gang und den Unverträglichkeiten/Einschränkungen eurer Gäste.<br></br>
+              Der erste Gang wird ab 18 Uhr serviert. Ihr bekommt kurz zuvor per SMS Bescheid, wohin eure Reise geht.<br></br><br></br>
+              Ich freu mich auf euch!
+            </p>
+          </div>
         </div>
       )
     }

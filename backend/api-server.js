@@ -25,7 +25,7 @@ app.get("/", (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
-  console.log(req.body);
+  console.log(req.data);
   res.send({ isNew: true }).status(200);
 });
 
