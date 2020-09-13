@@ -28,7 +28,7 @@ h1{
   padding-top: 0em;
   align-self: center;
   display: flex;
-  background-color: #c4c4c49a;
+  background-color: #c4c4c4ab;
   width: 83vw;
   height: 85vh;
   font-family: Comic Sans MS;
@@ -52,10 +52,10 @@ button{
 .RegisterFormCard{
   font-family: Quattrocento;
   width: 83vw;
-  height:77vh;
   box-shadow:5px 5px 5px rgba(107, 104, 94, 0.555);
   background-color: rgba(255, 255, 255, 0.863);
   border-radius: 0.3em;
+  align-items: center;
 }
 
 .header{
@@ -71,6 +71,15 @@ button{
   padding-bottom: 0.3em;
 }
 
+table{
+  padding-left: 0.5em;
+  max-width: 83vw;
+  overflow: scroll;
+  align-self: center;
+}
+th{
+  text-align: left;
+}
 .finished{
   flex-direction: column;
   text-align: center;

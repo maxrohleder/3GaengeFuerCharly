@@ -8,7 +8,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      websiteNr: 0,
+      websiteNr: 1,
       p1_first: '',
       p1_last: '',
       p1_mobil: '',
@@ -87,34 +87,43 @@ class App extends Component {
   showPerson2 = () => {
     return (
       <React.Fragment>
-        Person 2<br></br>
-        <label>Vorname:
-          <input type='text' name='p2_first' onChange={this.onChangeHandler}></input>
-        </label><br></br>
-        <label>Nachname:
-          <input type='text' name='p2_last' onChange={this.onChangeHandler}></input>
-        </label><br></br>
-        <label>Handynummer:
-          <input type='text' name='p2_mobil' onChange={this.onChangeHandler}></input>
-        </label><br></br>
-        <label>Unverträglichkeiten/Einschränkungen:
-          <input type='text' name='p2_allergy' onChange={this.onChangeHandler}></input>
-        </label><br></br>
+        <tr>
+          <th>Engel Nr. 2</th>
+        </tr>
+        <tr>
+          <td>Vorname</td>
+          <td><input type='text' name='p2_first' onChange={this.onChangeHandler} required></input></td>
+        </tr>
+        <tr>
+          <td>Nachname</td>
+          <td><input type='text' name='p2_last' onChange={this.onChangeHandler} required></input></td>
+        </tr>
+        <tr>
+          <td>Handynummer</td>
+          <td><input type='number' name='p2_mobil' onChange={this.onChangeHandler} required></input></td>
+        </tr>
+        <tr>
+          <td>Unverträglichkeiten/<br></br>Einschränkungen</td>
+          <td><input type='text' name='p2_allergy' onChange={this.onChangeHandler}></input></td>
+        </tr>
       </React.Fragment>
     );
   }
   showKitchenAddress = () => {
     return (
       <React.Fragment>
-        <label>Straße:
-          <input type='text' name='street' onChange={this.onChangeHandler}></input>
-        </label><br></br>
-        <label>Hausnummer:
-          <input type='text' name='number' onChange={this.onChangeHandler}></input>
-        </label><br></br>
-        <label>PLZ:
-          <input type='text' name='postal' onChange={this.onChangeHandler}></input>
-        </label><br></br>
+        <tr>
+          <td>Straße</td>
+          <td><input type='text' name='street' onChange={this.onChangeHandler} required></input></td>
+        </tr>
+        <tr>
+          <td>Hausnummer</td>
+          <td><input type='number' name='number' onChange={this.onChangeHandler} required></input></td>
+        </tr>
+        <tr>
+          <td>PLZ</td>
+          <td><input type='number' name='postal' onChange={this.onChangeHandler}></input></td>
+        </tr>
       </React.Fragment>
     )
   }
@@ -149,34 +158,44 @@ class App extends Component {
           <div className='RegisterFormCard'>
             <div className='header'>Anmeldung</div>
             <form onSubmit={this.sendRegisterform}>
-              Person 1<br></br>
-              <label>Vorname:
-                <input type='text' name='p1_first' onChange={this.onChangeHandler}></input>
-              </label><br></br>
-              <label>Nachname:
-                <input type='text' name='p1_last' onChange={this.onChangeHandler}></input>
-              </label><br></br>
-              <label>Handynummer:
-                <input type='text' name='p1_mobil' onChange={this.onChangeHandler}></input>
-              </label><br></br>
-              <label>Unverträglichkeiten/Einschränkungen:
-                <input type='text' name='p1_allergy' onChange={this.onChangeHandler}></input>
-              </label><br></br>
-              <label>Ich möchte mit einem bestimmten Engel zusammenarbeiten
-                <input type='checkbox' name='isTeam' onChange={this.onButtonChange}></input><br></br>
-              </label>
-              {this.state.isTeam ? this.showPerson2() : null}
-              <label>Mir steht eine Küche zur Verfügung
-                <input type='checkbox' name='kitchen' onChange={this.onButtonChange}></input><br></br>
-              </label>
-              {this.state.kitchen ? this.showKitchenAddress() : null}
-              <label>Ich möchte nur bekannte Engel treffen
-                <input type='checkbox' name='covid' onChange={this.onButtonChange}></input><br></br>
-              </label>
-              <button type='submit'>Jetzt anmelden</button>
+              <table>
+                <tr>
+                  <th>Engel Nr. 1</th>
+                </tr>
+                <tr>
+                  <td>Vorname</td>
+                  <td><input type='text' name='p1_first' onChange={this.onChangeHandler} required></input></td>
+                </tr>
+                <tr>
+                  <td>Nachname</td>
+                  <td><input type='text' name='p1_last' onChange={this.onChangeHandler} required></input></td>
+                </tr>
+                <tr>
+                  <td>Handynummer</td>
+                  <td><input type='number' name='p1_mobil' onChange={this.onChangeHandler} required></input></td>
+                </tr>
+                <tr>
+                  <td>Unverträglichkeiten/<br></br>Einschränkungen</td>
+                  <td><input type='text' name='p1_allergy' onChange={this.onChangeHandler}></input></td>
+                </tr>
+                <tr>
+                  <td colspan='2'><input type='checkbox' name='isTeam' onChange={this.onButtonChange}></input> Ich habe bereits einen Team-Engel</td>
+                </tr>
+                {this.state.isTeam ? this.showPerson2() : null}
+                <tr>
+                  <td colspan='2'><input type='checkbox' name='kitchen' onChange={this.onButtonChange}></input> Mir steht eine Küche zur Verfügung</td>
+                </tr>
+                {this.state.kitchen ? this.showKitchenAddress() : null}
+                <tr>
+                  <td colspan='2'><input type='checkbox' name='covid' onChange={this.onButtonChange}></input> Ich möchte nur mir bekannte Engel treffen</td>
+                </tr>
+                <tr>
+                  <td colspan='2'><button type='submit'>Jetzt anmelden</button></td>
+                </tr>
+              </table>
             </form>
           </div>
-        </div>
+        </div >
       )
     }
     if (this.state.websiteNr === 2) {
