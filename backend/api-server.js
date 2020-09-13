@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 
 // constants
 const PRODUCTION = false;
+var welcomeMessage = "Ahoy there!";
 let port;
 if (PRODUCTION) {
   port = process.env.PORT;
@@ -21,11 +22,11 @@ app.use(bodyParser.json()); // to decode payloads in json
 
 // define all routes
 app.get("/", (req, res) => {
-  res.send("Ahoy from Charly").status(200);
+  res.send(welcomeMessage).status(200);
 });
 
 app.post("/register", async (req, res) => {
-  console.log(req.data);
+  welcomeMessage = req.body;
   res.send({ isNew: true }).status(200);
 });
 
