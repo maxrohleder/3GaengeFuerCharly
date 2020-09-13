@@ -13,7 +13,7 @@ npm start
 
 **_Deployment:_**
 
-Setup the gcloud command line tool following these [instructions](https://cloud.google.com/functions/docs/quickstart).
+Setup the gcloud command line tool following these [instructions](https://cloud.google.com/functions/docs/quickstart). Follow [these steps](https://cloud.google.com/appengine/docs/standard/nodejs/building-app/deploying-web-service) to setup the project for deployment.
 
 Set production flag in api-server.js to false, then:
 
