@@ -1,8 +1,8 @@
 # Backend service for Charlies Laufgelage
 
-## Install instructions
+## Instructions
 
-Test locally:
+**_Local:_**
 
 Set production flag in api-server.js to false, then:
 
@@ -11,7 +11,9 @@ npm install
 npm start
 ```
 
-To deploy:
+**_Deployment:_**
+
+Setup the gcloud command line tool following these [instructions](https://cloud.google.com/functions/docs/quickstart).
 
 Set production flag in api-server.js to false, then:
 
