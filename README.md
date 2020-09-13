@@ -1,4 +1,5 @@
 # 3GaengeFuerCharly
+
 Implementation of a Webapp, which lets participants register themselves and a backend service which will notify them where to go for their next course at the desired time.
 
 In Contrast to the actual Laufgelage, the participants will not get to know their full schedule for the evening, but will rather receive the updates via SMS in RealTime.
@@ -15,23 +16,23 @@ Alternatively the backend could be powered by python using flask. An alternative
 
 The only time the webapp has to communicate with the backend service is to register a new participant. To to so, the backend shall expose the following route:
 
-> HTTP-POST: */register*
-> <br>JSON-PAYLOAD:
-``` js
+> HTTP-POST: _/register_ > <br>JSON-PAYLOAD:
+
+```js
 {
   "person1": {
       "first": string,
       "last": string,
-      "mobile": integer,       
+      "mobile": integer,
       "allergy": string,
-  }, 
+  },
   "isTeam": bool,
   "person2": {
       "first": string,
       "last": string,
-      "mobile": integer,       
+      "mobile": integer,
       "allergy": string,
-  }, 
+  },
   "kitchen": bool,
   "address": {
       "street": string,
@@ -41,9 +42,11 @@ The only time the webapp has to communicate with the backend service is to regis
   "covid": bool,
 }
 ```
->  {
+
+> {
 > <br> ANSWER: 200 OK
 > <br>JSON-PAYLOAD:
+
 ```js
 {
     "isNew": bool,
