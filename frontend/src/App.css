@@ -1,3 +1,73 @@
+body{
+  margin: 0;
+}
+.welcomePage{
+  background-image: linear-gradient(#C4C4C4,#ecc03196);
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+
+}
 h1{
-  color: blueviolet;
+  margin-top: 1em;
+  text-align: center;
+  color: #FFD700;
+  font-weight: bold;
+  font-family: Quattrocento;
+  font-style: normal;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.568);
+  width: 100vw;
+}
+.welcome{
+  flex-direction: column;
+  padding: 1em;
+  padding-top: 0em;
+  align-self: center;
+  display: flex;
+  background-color: #C4C4C4;
+  width: 83vw;
+  height: 77vh;
+  justify-content: center;
+  font-family: Comic Sans MS;
+  font-style: normal;
+  font-size: 0.63em;
+  overflow: hidden;
+  overflow-y: scroll;
+  border-color: #ffc400b9;
+  border-width: 0.1em;
+  border-radius: 0.7em;
+  border-style: solid;
+}
+
+button{
+  align-self: center;
+  width: 50vw;
+  font-family: Comic Sans MS;
+  background-color: #ffc400b9;
+}
+
+.RegisterFormCard{
+  font-family: Quattrocento;
+  width: 83vw;
+  height:77vh;
+  box-shadow:5px 5px 5px rgba(107, 104, 94, 0.555);
+  background-color: rgba(255, 255, 255, 0.863);
+  border-radius: 0.3em;
+}
+
+.header{
+  font-size: larger;
+  border-top-left-radius: 0.3em;
+  border-top-right-radius: 0.3em;
+  width: 100%;
+  background-color: rgb(85, 81, 71);
+  color: white;
+  text-align: center;
+  font-size: large;
+  padding-top: 0.4em;
+  padding-bottom: 0.3em;
 }
