@@ -11,5 +11,41 @@ The backend will be powered by [Nodejs v12](https://github.com/nodejs/node), whi
 
 Alternatively the backend could be powered by python using flask. An alternative to cron jobs can be found in this [article](https://medium.com/thetiltblog/creating-scheduled-functions-in-python-apps-400ecea05bc3)
 
-## Architecture
+## Frontend-Backend-Interface
 
+The only time the webapp has to communicate with the backend service is to register a new participant. To to so, the backend shall expose the following route:
+
+> HTTP-POST: */register*
+> <br>JSON-PAYLOAD:
+``` js
+{
+  "person1": {
+      "first": string,
+      "last": string,
+      "mobile": integer,       
+      "allergy": string,
+  }, 
+  "isTeam": bool,
+  "person2": {
+      "first": string,
+      "last": string,
+      "mobile": integer,       
+      "allergy": string,
+  }, 
+  "kitchen": bool,
+  "address": {
+      "street": string,
+      "number": integer,
+      "postal": integer,
+  },
+  "covid": bool,
+}
+```
+>  {
+> <br> ANSWER: 200 OK
+> <br>JSON-PAYLOAD:
+```js
+{
+    "isNew": bool,
+}
+```
