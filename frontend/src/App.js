@@ -215,8 +215,9 @@ class App extends Component {
               Herzlichen Glückwunsch, deine Anmeldung war erfolgreich!<br></br><br></br>
               Du erhälst im Laufe der kommenden Woche eine SMS mit dem Namen deines Teampartners, eurem Gang und den Anmerkungen eurer Gäste.<br></br>
               Der erste Gang wird ab <b>18 Uhr</b> serviert. Ihr bekommt kurz zuvor per SMS Bescheid, wohin eure Reise geht.<br></br><br></br>
-              Ich freu mich auf euch!
-            </p>
+              Ich freu mich auf dich!</p>
+            <div><iframe src="https://giphy.com/embed/g9582DNuQppxC" width="100%" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div>
+            <p style={{ fontSize: '0.1em' }}><a href="https://giphy.com/gifs/hero0fwar-karmawhore-rhyming-g9582DNuQppxC">via GIPHY</a></p>
           </div>
         </div>
       )
