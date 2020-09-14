@@ -2,7 +2,7 @@ body{
   margin: 0;
 }
 .welcomePage{
-  background-image: linear-gradient(#C4C4C4,#ecc03196);
+  background-color: rgb(235, 235, 235);
   justify-content: center;
   align-items: center;
   width: 100vw;
@@ -10,8 +10,8 @@ body{
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
-
 }
+
 h1{
   margin-top: 1em;
   text-align: center;
@@ -22,6 +22,11 @@ h1{
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.568);
   width: 100vw;
 }
+
+.pageHeader{
+  margin-bottom: 1em;
+}
+
 .welcome{
   flex-direction: column;
   padding: 1em;
@@ -30,7 +35,6 @@ h1{
   display: flex;
   background-color: #c4c4c4ab;
   width: 83vw;
-  height: 85vh;
   font-family: Comic Sans MS;
   font-style: normal;
   font-size: 0.63em;
@@ -47,6 +51,7 @@ button{
   width: 50vw;
   font-family: Comic Sans MS;
   background-color: #ffc400b9;
+  box-shadow: 1px 1px 1px rgb(97, 93, 93);
 }
 
 .RegisterFormCard{
@@ -56,6 +61,7 @@ button{
   background-color: rgba(255, 255, 255, 0.863);
   border-radius: 0.3em;
   align-items: center;
+  justify-content: center;
 }
 
 .header{
@@ -91,7 +97,7 @@ th{
   height: 50vh;
   font-family: Comic Sans MS;
   font-style: normal;
-  font-size: 0.8em;
+  font-size: 1em;
   overflow: hidden;
   overflow-y: scroll;
   border-color: #ffc400b9;

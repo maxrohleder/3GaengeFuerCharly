@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import logo from './pageHead.png'
 
 const API_URL = 'https://gaengefuercharly.ew.r.appspot.com/register';
 
@@ -8,7 +9,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      websiteNr: 1,
+      websiteNr: 0,
       p1_first: '',
       p1_last: '',
       p1_mobil: '',
@@ -132,12 +133,14 @@ class App extends Component {
     if (this.state.websiteNr === 0) {
       return (
         <div className='welcomePage'>
-          <h1>3 Gänge für Charly</h1>
+          <div className='pageHeader'>
+            <img src={logo} alt='Logo' width='100%' />
+          </div>
           <div className='welcome'>
             <p>Hallo meine Engel!<br></br><br></br>
           Herzlich Willkommen auf der Anmeldeseite für das interne Laufgelage anlässlich meines Geburtstages. Es freut mich sehr, das ihr den Weg zu mir gefunden habt. <br></br><br></br>
           Kurz zum Ablauf:<br></br>
-          Ihr werdet in 2er Teams aufgeteilt (wer einen favorisierten Partner hat, kann sich gerne mit diesem zusammen anmelden). Jedes Team erhält einen von 3 Gängen (Vor-, Haupt- oder Nachspeise), welchen es für 4 Gäste vorbereiten soll. Für die anderen beiden Gänge besucht man einen jeweils anderen Haushalt. So lernt jedes Team an dem Abend vorraussichtlich 6 andere Teams kennen. Wer aufgrund der aktuellen Corona-Situation keine/wenig neue Menschen kennenlernen möchte, kann dies in der Anmeldung angeben. Dann werde ich versuchen euch nur mit euch bekannten Personen in eine Gruppe zu stecken.<br></br>
+          Ihr werdet in 2er Teams aufgeteilt (wer einen favorisierten Partner hat, kann sich gerne mit diesem zusammen anmelden). Jedes Team erhält einen von 3 Gängen (Vor-, Haupt- oder Nachspeise), welchen es für 4 weitere Gäste vorbereiten soll. Für die anderen beiden Gänge besucht man einen jeweils anderen Haushalt. So lernt jedes Team an dem Abend vorraussichtlich 6 andere Teams kennen. Wer aufgrund der aktuellen Corona-Situation keine/wenig neue Menschen kennenlernen möchte, kann dies in der Anmeldung angeben. Dann werde ich versuchen euch nur mit euch bekannten Personen in eine Gruppe zu stecken.<br></br>
           Da ein Engel immer dem Anlass entsprechend gekleidet sein sollte, ist alles von schwarzer Hose &amp; Hemd bis zum Abiballkleid erwünscht.<br></br>
           Weil wir auch Engel aus anderen Sektionen erwarten, gebt ihr bitte an, ob euch eine Küche in Erlangen zur Verfügung steht. Andernfalls werde ich euch eine Küche organisieren.<br></br>
           Nach dem Dessert werden wir uns noch alle in einer Bar oder ähnlichem treffen.<br></br>
@@ -154,7 +157,9 @@ class App extends Component {
     if (this.state.websiteNr === 1) {
       return (
         <div className='welcomePage'>
-          <h1>3 Gänge für Charly</h1>
+          <div className='pageHeader'>
+            <img src={logo} alt='Logo' width='100%' />
+          </div>
           <div className='RegisterFormCard'>
             <div className='header'>Anmeldung</div>
             <form onSubmit={this.sendRegisterform}>
@@ -193,6 +198,7 @@ class App extends Component {
                   <td colspan='2'><button type='submit'>Jetzt anmelden</button></td>
                 </tr>
               </table>
+
             </form>
           </div>
         </div >
@@ -201,12 +207,14 @@ class App extends Component {
     if (this.state.websiteNr === 2) {
       return (
         <div className='welcomePage'>
-          <h1>3 Gänge für Charly</h1>
+          <div className='pageHeader'>
+            <img src={logo} alt='Logo' width='100%' />
+          </div>
           <div className='finished'>
             <p>
               Herzlichen Glückwunsch, deine Anmeldung war erfolgreich!<br></br><br></br>
-              Du erhälst im Laufe der kommenden Woche eine SMS mit dem Namen deines Teampartners, eurem Gang und den Unverträglichkeiten/Einschränkungen eurer Gäste.<br></br>
-              Der erste Gang wird ab 18 Uhr serviert. Ihr bekommt kurz zuvor per SMS Bescheid, wohin eure Reise geht.<br></br><br></br>
+              Du erhälst im Laufe der kommenden Woche eine SMS mit dem Namen deines Teampartners, eurem Gang und den Anmerkungen eurer Gäste.<br></br>
+              Der erste Gang wird ab <b>18 Uhr</b> serviert. Ihr bekommt kurz zuvor per SMS Bescheid, wohin eure Reise geht.<br></br><br></br>
               Ich freu mich auf euch!
             </p>
           </div>
