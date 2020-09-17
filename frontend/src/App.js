@@ -14,11 +14,13 @@ class App extends Component {
       p1_last: '',
       p1_mobil: '',
       p1_allergy: '',
+      p1_afterparty: '',
       isTeam: '',
       p2_first: '',
       p2_last: '',
       p2_mobile: '',
       p2_allergy: '',
+      p2_afterparty: '',
       kitchen: '',
       street: '',
       number: '',
@@ -107,6 +109,9 @@ class App extends Component {
           <td>Unverträglichkeiten/<br></br>Einschränkungen</td>
           <td><input type='text' name='p2_allergy' onChange={this.onChangeHandler}></input></td>
         </tr>
+        <tr>
+          <td colspan='2'><input type='checkbox' name='p2_afterparty' onChange={this.onButtonChange}></input> Ich bin bei ner Afterparty dabei</td>
+        </tr>
       </React.Fragment>
     );
   }
@@ -184,6 +189,9 @@ class App extends Component {
                   <td><input type='text' name='p1_allergy' onChange={this.onChangeHandler}></input></td>
                 </tr>
                 <tr>
+                  <td colspan='2'><input type='checkbox' name='p1_afterparty' onChange={this.onButtonChange}></input> Ich bin bei ner Afterparty dabei</td>
+                </tr>
+                <tr>
                   <td colspan='2'><input type='checkbox' name='isTeam' onChange={this.onButtonChange}></input> Ich habe bereits einen Team-Engel</td>
                 </tr>
                 {this.state.isTeam ? this.showPerson2() : null}
@@ -216,7 +224,7 @@ class App extends Component {
               Du erhälst im Laufe der kommenden Woche eine SMS mit dem Namen deines Teampartners, eurem Gang und den Anmerkungen eurer Gäste.<br></br>
               Der erste Gang wird ab <b>18 Uhr</b> serviert. Ihr bekommt kurz zuvor per SMS Bescheid, wohin eure Reise geht.<br></br><br></br>
               Ich freu mich auf dich!</p>
-            <div><iframe src="https://giphy.com/embed/g9582DNuQppxC" width="100%" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div>
+            <div><iframe title='leo says thanks' src="https://giphy.com/embed/g9582DNuQppxC" width="100%" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div>
             <p style={{ fontSize: '0.1em' }}><a href="https://giphy.com/gifs/hero0fwar-karmawhore-rhyming-g9582DNuQppxC">via GIPHY</a></p>
           </div>
         </div>
