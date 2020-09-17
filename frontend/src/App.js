@@ -42,6 +42,7 @@ class App extends Component {
         last: this.state.p1_last,
         mobil: this.state.p1_mobil,
         allergy: this.state.p1_allergy,
+        afterparty: this.p1_afterparty,
       },
       isTeam: this.state.isTeam,
       person2: {
@@ -49,6 +50,7 @@ class App extends Component {
         last: this.state.p2_last,
         mobil: this.state.p2_mobil,
         allergy: this.state.p2_allergy,
+        afterparty: this.p1_afterparty
       },
       kitchen: this.state.kitchen,
       address: {
