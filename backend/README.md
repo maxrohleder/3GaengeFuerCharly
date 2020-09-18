@@ -4,6 +4,10 @@
 
 **_Local:_**
 
+Testing Routes with cURL:
+
+curl -d '{"person1":"Max"}' -H "Content-Type: application/json" -X POST http://localhost:8080/register
+
 Set production flag in api-server.js to false, then:
 
 ```sh
