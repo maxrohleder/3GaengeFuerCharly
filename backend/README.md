@@ -10,6 +10,7 @@ This is how a database entry shall look like:
     ("Mustermann": {
       first: "Max",
       last: "Mustermann",
+      code: "b4f20289",
       isTeam: true,
       teamId: ChaMax,
       kitchen: true,

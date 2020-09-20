@@ -8,6 +8,8 @@ const Firestore = require("@google-cloud/firestore");
 // constants
 const PRODUCTION = false;
 const COLLECTION_NAME = "angels";
+var VERIFY_MSG =
+  "Bitte bestätige über diesen Link deine Handynummer für das Laufgelage: https://charlottepradel.de/verifymobile/";
 
 const USER_SECRET = process.env.USER_SECRET;
 const PWD = process.env.ADMIN_SECRET;
@@ -15,7 +17,7 @@ const port = process.env.PORT;
 // constants for twilio
 const accountSid = process.env.accountSid;
 const authToken = process.env.authToken;
-const client = require('twilio')(accountSid, authToken)
+const client = require("twilio")(accountSid, authToken);
 
 // database
 const FDB = new Firestore({
@@ -42,6 +44,16 @@ insertIfNew = (data) => {
   return true;
 };
 
+sendSMS = (mobile, msg_body) => {
+  client.messages
+    .create({
+      body: msg_body,
+      from: "+18443114577",
+      to: mobile,
+    })
+    .then((message) => console.log(message.sid));
+};
+
 // -----------------------------------------
 // -----------------routes -----------------
 // -----------------------------------------
@@ -62,18 +74,21 @@ app.post("/register", async (req, res) => {
 
   var data = req.body;
   var isNew = true;
+  var teamID = null;
   // team or single registration
-  if (req.body.isTeam) {
+  if (data.isTeam) {
     // create a teamID from first names (alphabetically)
-    var part1 = req.body.person1.first.substring(0, 3);
-    var part2 = req.body.person2.first.substring(0, 3);
-    var teamID = part1 < part2 ? part1 + part2 : part2 + part1;
+    var part1 = data.person1.first.substring(0, 3);
+    var part2 = data.person2.first.substring(0, 3);
+    teamID = part1 < part2 ? part1 + part2 : part2 + part1;
 
     // create entry for person2
+    var p2_code = shortHash(data.person2.last);
     var person2 = {
       ...data.person2,
+      code: [p2_code],
       isTeam: true,
-      teamId: teamID,
+      teamId: [teamID],
       kitchen: [data.kitchen],
       isVerified: false,
     };
@@ -85,22 +100,33 @@ app.post("/register", async (req, res) => {
     isNew = insertIfNew(person1);
   }
 
-  // insert person2
-  isNew = insertSingleIfNew(req.body.data) && isNew;
+  // construct entry for person1
+  var p1_code = shortHash(data.person1.last);
+  var person1 = {
+    ...data.person1,
+    code: [p1_code],
+    isTeam: [data.isTeam],
+    kitchen: [data.kitchen],
+    isVerified: false,
+  };
+  if (data.kitchen) {
+    person1["address"] = data.address;
+  }
+  if (data.isTeam) {
+    person1["teamId"] = teamID;
+  }
+
+  // insert person1
+  isNew = insertIfNew(person1) && isNew;
   res.send({ isNew: isNew }).status(200);
 
-  // TODO send passkey via twilio
-  // TODO generate validation link
-  var link = None;
-  var user_mobil = None;
-  var msg_body = 'Bitte bestätige über diesen Link deine Handynummer für das Laufgelage: ' + link;
-  client.messages
-    .create({
-      body: msg_body,
-      from: '+18443114577',
-      to: user_mobil,
-    })
-    .then(message => console.log(message.sid))
+  // send confirmation link via twilio
+  if (isNew) {
+    if (isTeam) {
+      sendSMS(person2.mobile, VERIFY_MSG + person2.code);
+    }
+    sendSMS(person1.mobile, VERIFY_MSG + person1.code);
+  }
 });
 
 app.post("/participants", async (req, res) => {
