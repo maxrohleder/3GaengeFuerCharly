@@ -118,8 +118,8 @@ class App extends Component {
           <td><input type='text' name='p2_last' onChange={this.onChangeHandler} required></input></td>
         </tr>
         <tr>
-          <td>Handynummer</td>
-          <td><input type='number' name='p2_mobil' onChange={this.onChangeHandler} required></input></td>
+          <td>Handynummer (+49...)</td>
+          <td><input type='number' name='p2_mobil' placeholder='+49123' onChange={this.onChangeHandler} required></input></td>
         </tr>
         <tr>
           <td>Unverträglichkeiten/<br></br>Einschränkungen</td>
@@ -203,8 +203,8 @@ class App extends Component {
                   <td><input type='text' name='p1_last' onChange={this.onChangeHandler} required></input></td>
                 </tr>
                 <tr>
-                  <td>Handynummer</td>
-                  <td><input type='number' name='p1_mobil' onChange={this.onChangeHandler} required></input></td>
+                  <td>Handynummer (+49...)</td>
+                  <td><input type='number' name='p1_mobil' placeholder='+49123' onChange={this.onChangeHandler} required></input></td>
                 </tr>
                 <tr>
                   <td>Unverträglichkeiten/<br></br>Einschränkungen</td>
