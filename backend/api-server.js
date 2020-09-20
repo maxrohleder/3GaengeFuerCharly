@@ -78,9 +78,24 @@ const sendSMS = (mobile, msg_body) => {
 };
 
 const searchAndVerify = async (userCode) => {
-  // TODO find and verify
-  console.log(userCode);
-  return true;
+  // find and verify
+  var docRef = ANGELS.where("code", "==", userCode);
+  try {
+    var snapshot = await docRef.get();
+    if (snapshot.empty) {
+      console.log("code doesnt exist", userCode);
+      return false;
+    } else {
+      snapshot.forEach(async (doc) => {
+        console.log(doc.id, "=>", doc.data());
+        await ANGELS.doc(doc.id).update({ isVerified: true });
+      });
+      return true;
+    }
+  } catch (err) {
+    console.log("Error verifying code", err);
+    return false;
+  }
 };
 
 // -----------------------------------------
