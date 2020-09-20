@@ -23,8 +23,10 @@ Alternatively the backend could be powered by python using flask. An alternative
 
 ## Frontend-Backend-Interface
 
-The only time the webapp has to communicate with the backend service is to register a new participant. To to so, the backend shall expose the following route:
+The following routes define the Api interface between frontend and backend logic.
 
+> used to register a new patient into the db. if new, returns conformation
+>
 > HTTP-POST: _/register_ > <br>JSON-PAYLOAD:
 
 ```js
@@ -64,7 +66,7 @@ The only time the webapp has to communicate with the backend service is to regis
 }
 ```
 
-> HTTP-GET: _/confirm_
+> Used to confirm HTTP-GET: _/confirm_
 
 > <br> ANSWER: 200 OK
 > <br>JSON-PAYLOAD:
