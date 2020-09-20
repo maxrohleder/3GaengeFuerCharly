@@ -9,13 +9,14 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      websiteNr: 2,
+      websiteNr: 0,
+      userSecret: '',
       p1_first: '',
       p1_last: '',
       p1_mobil: '',
       p1_allergy: '',
       p1_afterparty: '',
-      isTeam: '',
+      isTeam: false,
       p2_first: '',
       p2_last: '',
       p2_mobile: '',
@@ -26,7 +27,6 @@ class App extends Component {
       number: '',
       postal: '',
       covid: '',
-      verifizierungscode: '',
       registerSuccess: false,
     };
   }
@@ -38,6 +38,7 @@ class App extends Component {
   sendRegisterform = (event) => {
     event.preventDefault();
     var payload = JSON.stringify({
+      userSecret: this.userSecret,
       person1: {
         first: this.state.p1_first,
         last: this.state.p1_last,
@@ -70,12 +71,21 @@ class App extends Component {
       console.log(data);
       this.setState({
         registerSuccess: data.isNew,
+        userSecret: data.userSecret,
       })
-      if (data.isNew) {
-        this.setState({ websiteNr: 2 })
+      if (data.userSecret) {
+        if (data.isNew) {
+          // registration form is valid and password is correct
+          this.setState({ websiteNr: 5 })
+        }
+        else {
+          // registration form is invalid - user already exists
+          this.setState({ websiteNr: 4 })
+        }
       }
       else {
-        this.setState({ websiteNr: 3 })
+        // invalid user secret
+        this.setState({ websiteNr: 2 })
       }
     }).catch((err) => {
       console.log('Something went wrong during the registration', err)
@@ -139,19 +149,30 @@ class App extends Component {
       </React.Fragment>
     )
   }
-  verifizierung = () => {
-    console.log(this.state.verifizierungscode)
-    // TODO fetch ans backend
-    let backend_keypass = '0';
-    if (backend_keypass === this.state.verifizierungscode) {
-      this.setState({ websiteNr: 4 })
+  SMSverifizierung = (event) => {
+    event.preventDefault();
+    var payload = JSON.stringify({
+      verifizierungscode: this.state.verifizierungscode,
+    });
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload,
     }
-    else {
-      this.setState({ websiteNr: 5 })
-    }
+    fetch(API_URL, requestOptions).then((response) => response.json()).then((data) => {
+      if (data.isVerified) {
+        this.setState({ websiteNr: 4 })
+      }
+      else {
+        this.setState({ websiteNr: 5 })
+      }
+    }).catch((err) => {
+      console.log('Something went wrong during the SMS code verification', err)
+    })
   }
 
   render() {
+    // welcome page
     if (this.state.websiteNr === 0) {
       return (
         <div className='welcomePage'>
@@ -176,6 +197,7 @@ class App extends Component {
         </div>
       )
     }
+    // registration form
     if (this.state.websiteNr === 1) {
       return (
         <div className='welcomePage'>
@@ -188,6 +210,10 @@ class App extends Component {
               <table>
                 <tr>
                   <th>Engel Nr. 1</th>
+                </tr>
+                <tr>
+                  <td>Passwort</td>
+                  <td><input type='password' name='userSecret' onChange={this.onChangeHandler} required></input></td>
                 </tr>
                 <tr>
                   <td>Vorname</td>
@@ -229,7 +255,22 @@ class App extends Component {
         </div >
       )
     }
+    // user entered wrong user secret
     if (this.state.websiteNr === 2) {
+      return (
+        <div className='welcomePage'>
+          <div className='pageHeader'>
+            <img src={logo} alt='Logo' width='100%' />
+          </div>
+          <div className='finished'>
+            <h2>Ungültiges Passwort</h2>
+            <p>Das von dir eingetragene Passwort entspricht nicht dem in der WhatsApp-Gruppe. Bitte lade diese Seite neu und überprüfe deine Einträge.</p>
+          </div>
+        </div>
+      )
+    }
+    // verify your phone number by entering an code send to you via sms
+    if (this.state.websiteNr === 3) {
       return (
         <div className='welcomePage'>
           <div className='pageHeader'>
@@ -238,7 +279,7 @@ class App extends Component {
           <div className='finished'>
             <h2>Verifizierung deiner Handynummer</h2>
             <p>Wir haben dir einen Verifizierungscode auf dein Handy per SMS geschickt. Bitte trage die dir zugestellte Nummer in das Feld ein. </p>
-            <form onSubmit={this.verifizierung}>
+            <form onSubmit={this.SMSverifizierung}>
               <label>
                 <input type='text' name='verifizierungscode' placeholder='Verifizierungscode' onChange={this.onChangeHandler} required></input><button type='submit' style={{ width: '30vw' }}>verifizieren</button>
               </label>
@@ -248,7 +289,8 @@ class App extends Component {
         </div>
       )
     }
-    if (this.state.websiteNr === 3) {
+    // error: user already in data base
+    if (this.state.websiteNr === 4) {
       return (
         <div className='welcomePage'>
           <div className='pageHeader'>
@@ -261,7 +303,8 @@ class App extends Component {
         </div>
       )
     }
-    if (this.state.websiteNr === 4) {
+    // successful registration - finished page
+    if (this.state.websiteNr === 5) {
       return (
         <div className='welcomePage'>
           <div className='pageHeader'>
@@ -279,7 +322,8 @@ class App extends Component {
         </div>
       )
     }
-    if (this.state.websiteNr === 5) {
+    // error: verification failed - entered wrong verification code
+    if (this.state.websiteNr === 6) {
       return (
         <div className='welcomePage'>
           <div className='pageHeader'>
