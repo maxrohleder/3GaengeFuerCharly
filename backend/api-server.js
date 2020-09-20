@@ -6,20 +6,16 @@ const Firestore = require("@google-cloud/firestore");
 
 // constants
 const PRODUCTION = false;
-const fdb = new Firestore({
+const USER_SECRET = process.env.USER_SECRET;
+const PWD = process.env.ADMIN_SECRET;
+const port = process.env.PORT;
+const FDB = new Firestore({
   projectId: "<project-name>",
   keyFilename: "secrets/<auth-key-firestore>.json",
 });
+
+// variables
 var welcomeMessage = "Ahoy there!";
-let PWD;
-let port;
-if (PRODUCTION) {
-  port = process.env.PORT;
-  PWD = process.env.ADMIN_SECRET;
-} else {
-  port = 8080;
-  PWD = "test";
-}
 
 // creating the http and socket server
 const app = express();
@@ -30,13 +26,11 @@ app.use(bodyParser.json()); // to decode payloads in json
 
 // helper methods
 
-// define all routes
-app.get("/", (req, res) => {
-  res.send(welcomeMessage).status(200);
-});
+// -----------------------------------------
+// -----------------routes -----------------
+// -----------------------------------------
 
-app.get("/confirm/:passkey", (req, res) => {
-  var passkey = req.params.passkey;
+app.get("/", (req, res) => {
   res.send(welcomeMessage).status(200);
 });
 
@@ -56,7 +50,7 @@ app.post("/register", async (req, res) => {
   // TODO send passkey via twilio
 });
 
-app.post("/angels", async (req, res) => {
+app.post("/participants", async (req, res) => {
   var pwd = req.body.pwd;
   console.log(req.body);
   console.log(pwd);
@@ -66,6 +60,10 @@ app.post("/angels", async (req, res) => {
     res.send({ auth: false }).status(401);
   }
 });
+
+// -----------------------------------------
+// -----------------routes -----------------
+// -----------------------------------------
 
 // run the server in either production or dev mode
 if (PRODUCTION) {
