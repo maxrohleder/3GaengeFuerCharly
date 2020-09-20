@@ -26,13 +26,16 @@ curl -d '{"person1":"Max"}' -H "Content-Type: application/json" -X POST http://l
 
 ### _Deployment:_
 
-Setup the gcloud command line tool following these [instructions](https://cloud.google.com/functions/docs/quickstart). Follow [these steps](https://cloud.google.com/appengine/docs/standard/nodejs/building-app/deploying-web-service) to setup the project for deployment.
+Setup the gcloud command line tool following these [instructions](https://cloud.google.com/functions/docs/quickstart).
+
+Follow [these steps](https://cloud.google.com/appengine/docs/standard/nodejs/building-app/deploying-web-service) to setup the project for deployment.
+
+Repeat these steps before deployment:
 
 - Set production flag in api-server.js to true
 - Fill in all production secrets in [app.yaml](app.yaml)
 - upload project:
 
 ```sh
-gcloud app init
 gcloud app deploy
 ```

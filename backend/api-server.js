@@ -9,10 +9,14 @@ const PRODUCTION = false;
 const USER_SECRET = process.env.USER_SECRET;
 const PWD = process.env.ADMIN_SECRET;
 const port = process.env.PORT;
+
+// database
 const FDB = new Firestore({
   projectId: "<project-name>",
   keyFilename: "secrets/<auth-key-firestore>.json",
 });
+const TEAMS = "teams"; // collection names for teams and singles
+const SINGLES = "singles";
 
 // variables
 var welcomeMessage = "Ahoy there!";
@@ -24,7 +28,21 @@ app.use(express.json()); // for post calls in json format
 const server = http.createServer(app);
 app.use(bodyParser.json()); // to decode payloads in json
 
-// helper methods
+////////////////////////////////////////////
+////////////////// helpers /////////////////
+////////////////////////////////////////////
+
+// inserts the requested data into database if new
+insertTeamIfNew = (data, teamID) => {
+  // TODO insert new data with ID
+  return true;
+};
+
+// checks existence and inserts if new
+insertSingleIfNew = (data) => {
+  // TODO check and insert as single
+  return true;
+};
 
 // -----------------------------------------
 // -----------------routes -----------------
@@ -36,17 +54,23 @@ app.get("/", (req, res) => {
 
 app.post("/register", async (req, res) => {
   welcomeMessage = req.body;
-  console.log(req.body);
+  console.log("received: \n", req.body);
 
-  // assert none of the persons are in teams already
+  // team or single registration
+  if (req.body.isTeam) {
+    // create a teamID from first names (alphabetically)
+    var part1 = req.body.person1.first.substring(0, 3);
+    var part2 = req.body.person2.first.substring(0, 3);
+    var teamID = part1 < part2 ? part1 + part2 : part2 + part1;
 
-  // assert person does not exist without teamID already
-
-  // generate TeamID
-
-  // insert person1 with TeamID
-
-  res.send({ isNew: true }).status(200);
+    // check if teamID exists and insert if new
+    var isNew = insertTeamIfNew(req.body.data, teamID);
+    res.send({ isNew: isNew, teamID: teamID }).status(200);
+  } else {
+    // register single person
+    var isNew = insertSingleIfNew(req.body.data);
+    res.send({ isNew: isNew }).status(200);
+  }
 
   // TODO send passkey via twilio
 });
@@ -62,9 +86,9 @@ app.post("/participants", async (req, res) => {
   }
 });
 
-// -----------------------------------------
-// -----------------routes -----------------
-// -----------------------------------------
+// ##############################################
+// ############# start service ##################
+// ##############################################
 
 // run the server in either production or dev mode
 if (PRODUCTION) {
