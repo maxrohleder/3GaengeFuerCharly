@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "./App.css";
 import logo from "./pageHead.png";
 
-const API_URL = "https://gaengefuercharly.ew.r.appspot.com/register";
+const REGISTER_URL = "https://gaengefuercharly.ew.r.appspot.com/register";
 
 class App extends Component {
   constructor(props) {
@@ -66,7 +66,7 @@ class App extends Component {
       body: payload,
     };
 
-    fetch(API_URL, requestOptions)
+    fetch(REGISTER_URL, requestOptions)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
@@ -94,10 +94,10 @@ class App extends Component {
   onChangeHandler = (event) => {
     let key = event.target.name;
     let val = event.target.value;
-    if (key.includes('mobil') && val.length >= 3) {
+    if (key.includes("mobil") && val.length >= 3) {
       // check if mobil number has +49 at the beginning
       if (!val.includes("+49")) {
-        alert('Invalid mobil number - no +49 found')
+        alert("Invalid mobil number - no +49 found");
       }
     }
     this.setState({ [key]: val });
