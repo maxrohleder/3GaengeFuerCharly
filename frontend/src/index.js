@@ -8,7 +8,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 ReactDOM.render(
   <Router>
     <Switch>
-      <Route path="/" component={App} />
+      <Route exact path="/" component={App} />
       <Route path="/verifymobile/:code" component={SMSverification} />
     </Switch>
   </Router>,

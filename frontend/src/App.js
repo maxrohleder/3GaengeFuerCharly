@@ -36,7 +36,7 @@ class App extends Component {
   sendRegisterform = (event) => {
     event.preventDefault();
     var payload = JSON.stringify({
-      userSecret: this.userSecret,
+      userSecret: this.state.userSecret,
       person1: {
         first: this.state.p1_first,
         last: this.state.p1_last,

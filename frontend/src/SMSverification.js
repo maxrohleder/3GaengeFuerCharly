@@ -8,13 +8,15 @@ class SMSverification extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      verifyCode: this.props.code,
+      verifyCode: props.match.params.code,
       websiteNr: 0,
     };
   }
 
   // start SMS verification
   componentDidMount() {
+
+    console.log('verifying code: ', this.state.verifyCode);
     var payload = JSON.stringify({
       verifyCode: this.state.verifyCode,
     });
