@@ -12,8 +12,7 @@ const port = process.env.PORT;
 
 // database
 const FDB = new Firestore({
-  projectId: "<project-name>",
-  keyFilename: "secrets/<auth-key-firestore>.json",
+  keyFilename: "secrets/gaengefuercharly-db-key.json",
 });
 const TEAMS = "teams"; // collection names for teams and singles
 const SINGLES = "singles";
