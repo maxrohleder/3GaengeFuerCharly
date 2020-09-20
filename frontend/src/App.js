@@ -149,27 +149,6 @@ class App extends Component {
       </React.Fragment>
     )
   }
-  SMSverifizierung = (event) => {
-    event.preventDefault();
-    var payload = JSON.stringify({
-      verifizierungscode: this.state.verifizierungscode,
-    });
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: payload,
-    }
-    fetch(API_URL, requestOptions).then((response) => response.json()).then((data) => {
-      if (data.isVerified) {
-        this.setState({ websiteNr: 4 })
-      }
-      else {
-        this.setState({ websiteNr: 5 })
-      }
-    }).catch((err) => {
-      console.log('Something went wrong during the SMS code verification', err)
-    })
-  }
 
   render() {
     // welcome page
@@ -269,26 +248,6 @@ class App extends Component {
         </div>
       )
     }
-    // verify your phone number by entering an code send to you via sms
-    if (this.state.websiteNr === 3) {
-      return (
-        <div className='welcomePage'>
-          <div className='pageHeader'>
-            <img src={logo} alt='Logo' width='100%' />
-          </div>
-          <div className='finished'>
-            <h2>Verifizierung deiner Handynummer</h2>
-            <p>Wir haben dir einen Verifizierungscode auf dein Handy per SMS geschickt. Bitte trage die dir zugestellte Nummer in das Feld ein. </p>
-            <form onSubmit={this.SMSverifizierung}>
-              <label>
-                <input type='text' name='verifizierungscode' placeholder='Verifizierungscode' onChange={this.onChangeHandler} required></input><button type='submit' style={{ width: '30vw' }}>verifizieren</button>
-              </label>
-            </form>
-            <p>Solltest du keine SMS erhalten haben, dann kontaktiere uns bitte :)</p>
-          </div>
-        </div>
-      )
-    }
     // error: user already in data base
     if (this.state.websiteNr === 4) {
       return (
@@ -322,21 +281,6 @@ class App extends Component {
         </div>
       )
     }
-    // error: verification failed - entered wrong verification code
-    if (this.state.websiteNr === 6) {
-      return (
-        <div className='welcomePage'>
-          <div className='pageHeader'>
-            <img src={logo} alt='Logo' width='100%' />
-          </div>
-          <div className='finished'>
-            <h2>Verifizierung fehlgeschlagen</h2>
-            <p>Upps, da ist wohl was schief gegangen...<br></br>Bitte kontaktiere uns, wenn du Probleme bei der Registrierung haben solltest.</p>
-          </div>
-        </div>
-      )
-    }
-
   }
 
 }
