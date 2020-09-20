@@ -76,7 +76,7 @@ The following routes define the Api interface between frontend and backend logic
 
 ```js
 {
-    "verifizierungscode": string,
+    "verifyCode": string,
 }
 ```
 
