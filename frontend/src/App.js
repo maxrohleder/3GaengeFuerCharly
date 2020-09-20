@@ -136,7 +136,7 @@ class App extends Component {
           <td>Handynummer (+49...)</td>
           <td>
             <input
-              type="number"
+              type="text"
               name="p2_mobil"
               placeholder="+49123"
               onChange={this.onChangeHandler}
@@ -309,7 +309,7 @@ class App extends Component {
                   <td>Handynummer (+49...)</td>
                   <td>
                     <input
-                      type="number"
+                      type="text"
                       name="p1_mobil"
                       placeholder="+49123"
                       onChange={this.onChangeHandler}
