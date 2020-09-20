@@ -42,9 +42,26 @@ app.use(bodyParser.json()); // to decode payloads in json
 
 // inserts the requested data into database if new
 const insertIfNew = async (data) => {
-  // insert new data with ID
-  console.log("INSERTED NEW ENTRY: \n\n", data);
-  return true;
+  // see if doc with id exists in Angels
+  let docRef = ANGELS.doc(data.last);
+  try {
+    let docPrev = await docRef.get();
+    if (docPrev.exists) {
+      console.log("entry with id exists: ", data.last);
+      console.log(docPrev.data());
+      if (docPrev.data().isTeam) {
+        console.log("aborting because team is already set.");
+        return false;
+      }
+    }
+    // insert new data with ID
+    await docRef.set(data);
+    console.log("INSERTED NEW ENTRY: \n\n", data);
+    return true;
+  } catch (err) {
+    console.log("firestore error on isValidPlace", err);
+    return false;
+  }
 };
 
 const sendSMS = (mobile, msg_body) => {
@@ -111,7 +128,7 @@ app.post("/register", async (req, res) => {
     }
 
     // insert person2 if new or no teamId set
-    isNew = await insertIfNew(person1);
+    isNew = await insertIfNew(person2);
   }
 
   // construct entry for person1
