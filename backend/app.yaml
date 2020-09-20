@@ -1,6 +1,5 @@
 runtime: nodejs12
 
 env_variables:
-  ADMIN_SECRET: "<app_secret_here>"
   USER_SECRET: "<verify_guests>"
   ADMIN_SECRET: "<to_retrieve_data>"
