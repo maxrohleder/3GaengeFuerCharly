@@ -164,7 +164,7 @@ app.post("/register", async (req, res) => {
 
   // insert person1
   isNew = (await insertIfNew(person1)) && isNew;
-  res.send({ isNew: isNew }).status(200);
+  res.send({ isNew: isNew, validSecret: true }).status(200);
 
   // send confirmation link via twilio
   if (isNew) {
