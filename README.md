@@ -25,7 +25,7 @@ Alternatively the backend could be powered by python using flask. An alternative
 
 The following routes define the Api interface between frontend and backend logic.
 
-> used to register a new patient into the db. if new, returns conformation
+> Used to register a new patient into the db. if new, returns conformation
 >
 > HTTP-POST: _/register_ > <br>JSON-PAYLOAD:
 
@@ -63,16 +63,29 @@ The following routes define the Api interface between frontend and backend logic
 ```js
 {
     "isNew": bool,
+    "validSecret": bool,
 }
 ```
 
-> Used to confirm HTTP-GET: _/confirm_
+> Used to confirm mobile number.
+>
+> HTTP-POST: _/confirm_
 
 > <br> ANSWER: 200 OK
 > <br>JSON-PAYLOAD:
 
 ```js
 {
-    "isNew": bool,
+    "verifizierungscode": string,
+}
+```
+
+> {
+> <br> ANSWER: 200 OK
+> <br>JSON-PAYLOAD:
+
+```js
+{
+    "isVerified": bool,
 }
 ```
