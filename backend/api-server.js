@@ -7,7 +7,6 @@ const Firestore = require("@google-cloud/firestore");
 
 // constants
 const PRODUCTION = false;
-const COLLECTION_NAME = "angels";
 var VERIFY_MSG =
   "Bitte bestätige über diesen Link deine Handynummer für das Laufgelage: https://charlottepradel.de/verifymobile/";
 
@@ -25,6 +24,7 @@ console.log("using sid and token: ", accountSid, authToken);
 const FDB = new Firestore({
   keyFilename: "secrets/gaengefuercharly-db-key.json",
 });
+let ANGELS = FDB.collection("angels");
 
 // variables
 var welcomeMessage = "Ahoy there!";
@@ -41,13 +41,13 @@ app.use(bodyParser.json()); // to decode payloads in json
 ////////////////////////////////////////////
 
 // inserts the requested data into database if new
-insertIfNew = (data) => {
-  // TODO insert new data with ID
+const insertIfNew = async (data) => {
+  // insert new data with ID
   console.log("INSERTED NEW ENTRY: \n\n", data);
   return true;
 };
 
-sendSMS = (mobile, msg_body) => {
+const sendSMS = (mobile, msg_body) => {
   console.log("Sending SMS to ", mobile);
   if (PRODUCTION) {
     client.messages
@@ -60,7 +60,7 @@ sendSMS = (mobile, msg_body) => {
   }
 };
 
-searchAndVerify = (userCode) => {
+const searchAndVerify = async (userCode) => {
   // TODO find and verify
   console.log(userCode);
   return true;
@@ -111,7 +111,7 @@ app.post("/register", async (req, res) => {
     }
 
     // insert person2 if new or no teamId set
-    isNew = insertIfNew(person1);
+    isNew = await insertIfNew(person1);
   }
 
   // construct entry for person1
@@ -131,7 +131,7 @@ app.post("/register", async (req, res) => {
   }
 
   // insert person1
-  isNew = insertIfNew(person1) && isNew;
+  isNew = (await insertIfNew(person1)) && isNew;
   res.send({ isNew: isNew }).status(200);
 
   // send confirmation link via twilio
@@ -159,7 +159,7 @@ app.post("/confirm", async (req, res) => {
   console.log("received hash: ", userCode);
 
   // searches the code in database and sets a verified flag if found
-  var verified = searchAndVerify(userCode);
+  var verified = await searchAndVerify(userCode);
   res.send({ isVerified: verified });
 });
 
