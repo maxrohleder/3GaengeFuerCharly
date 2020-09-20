@@ -72,9 +72,9 @@ class App extends Component {
         console.log(data);
         this.setState({
           registerSuccess: data.isNew,
-          userSecret: data.userSecret,
+          userSecret: data.validSecret,
         });
-        if (data.userSecret) {
+        if (data.validSecret) {
           if (data.isNew) {
             // registration form is valid and password is correct
             this.setState({ websiteNr: 5 });
