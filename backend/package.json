@@ -13,6 +13,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "httpserver": "^0.3.0",
+    "short-hash": "^1.0.0",
     "twilio": "^3.49.2"
   }
 }
