@@ -35,6 +35,9 @@ app.get("/", (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
+  welcomeMessage = req.body;
+  console.log(req.body);
+
   // assert none of the persons are in teams already
 
   // assert person does not exist without teamID already
@@ -43,8 +46,6 @@ app.post("/register", async (req, res) => {
 
   // insert person1 with TeamID
 
-  welcomeMessage = req.body;
-  console.log(req.body);
   res.send({ isNew: true }).status(200);
 
   // TODO send passkey via twilio
