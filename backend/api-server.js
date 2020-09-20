@@ -14,10 +14,12 @@ var VERIFY_MSG =
 const USER_SECRET = process.env.USER_SECRET;
 const PWD = process.env.ADMIN_SECRET;
 const port = process.env.PORT;
+
 // constants for twilio
 const accountSid = process.env.accountSid;
 const authToken = process.env.authToken;
 const client = require("twilio")(accountSid, authToken);
+console.log("using sid and token: ", accountSid, authToken);
 
 // database
 const FDB = new Firestore({
@@ -41,17 +43,27 @@ app.use(bodyParser.json()); // to decode payloads in json
 // inserts the requested data into database if new
 insertIfNew = (data) => {
   // TODO insert new data with ID
+  console.log("INSERTED NEW ENTRY: \n\n", data);
   return true;
 };
 
 sendSMS = (mobile, msg_body) => {
-  client.messages
-    .create({
-      body: msg_body,
-      from: "+18443114577",
-      to: mobile,
-    })
-    .then((message) => console.log(message.sid));
+  console.log("Sending SMS to ", mobile);
+  if (PRODUCTION) {
+    client.messages
+      .create({
+        body: msg_body,
+        from: "+18443114577",
+        to: mobile,
+      })
+      .then((message) => console.log(message.sid));
+  }
+};
+
+searchAndVerify = (userCode) => {
+  // TODO find and verify
+  console.log(userCode);
+  return true;
 };
 
 // -----------------------------------------
@@ -63,16 +75,18 @@ app.get("/", (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
-  welcomeMessage = req.body;
-  console.log("/register: \n", req.body);
+  var data = req.body;
+
+  welcomeMessage = data;
+  console.log("/register: \n", data);
 
   // validate user secret (shared over whatsapp)
-  if (req.body.data.userSecret !== USER_SECRET) {
+  if (data.userSecret !== USER_SECRET) {
     res.send({ validSecret: false }).status(200);
+    console.log("invalid user secret! ", data.userSecret, USER_SECRET);
     return;
   }
 
-  var data = req.body;
   var isNew = true;
   var teamID = null;
   // team or single registration
@@ -86,10 +100,10 @@ app.post("/register", async (req, res) => {
     var p2_code = shortHash(data.person2.last);
     var person2 = {
       ...data.person2,
-      code: [p2_code],
+      code: p2_code,
       isTeam: true,
-      teamId: [teamID],
-      kitchen: [data.kitchen],
+      teamId: teamID,
+      kitchen: data.kitchen,
       isVerified: false,
     };
     if (data.kitchen) {
@@ -104,9 +118,9 @@ app.post("/register", async (req, res) => {
   var p1_code = shortHash(data.person1.last);
   var person1 = {
     ...data.person1,
-    code: [p1_code],
-    isTeam: [data.isTeam],
-    kitchen: [data.kitchen],
+    code: p1_code,
+    isTeam: data.isTeam,
+    kitchen: data.kitchen,
     isVerified: false,
   };
   if (data.kitchen) {
@@ -122,10 +136,10 @@ app.post("/register", async (req, res) => {
 
   // send confirmation link via twilio
   if (isNew) {
-    if (isTeam) {
-      sendSMS(person2.mobile, VERIFY_MSG + person2.code);
+    if (data.isTeam) {
+      sendSMS(person2.mobil, VERIFY_MSG + person2.code);
     }
-    sendSMS(person1.mobile, VERIFY_MSG + person1.code);
+    sendSMS(person1.mobil, VERIFY_MSG + person1.code);
   }
 });
 
@@ -141,13 +155,12 @@ app.post("/participants", async (req, res) => {
 });
 
 app.post("/confirm", async (req, res) => {
-  console.log("received hash: ", userCode);
   var userCode = req.body.verifyCode;
+  console.log("received hash: ", userCode);
+
   // searches the code in database and sets a verified flag if found
   var verified = searchAndVerify(userCode);
-  res.send({ isVerified: true });
-  console.log("received code: ", userCode);
-  console.log("valid");
+  res.send({ isVerified: verified });
 });
 
 // ##############################################
