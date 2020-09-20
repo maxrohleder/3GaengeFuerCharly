@@ -9,7 +9,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      websiteNr: 0,
+      websiteNr: 2,
       p1_first: '',
       p1_last: '',
       p1_mobil: '',
@@ -26,6 +26,7 @@ class App extends Component {
       number: '',
       postal: '',
       covid: '',
+      verifizierungscode: '',
       registerSuccess: false,
     };
   }
@@ -73,6 +74,9 @@ class App extends Component {
       if (data.isNew) {
         this.setState({ websiteNr: 2 })
       }
+      else {
+        this.setState({ websiteNr: 3 })
+      }
     }).catch((err) => {
       console.log('Something went wrong during the registration', err)
     })
@@ -97,7 +101,7 @@ class App extends Component {
         </tr>
         <tr>
           <td>Vorname</td>
-          <td><input type='text' name='p2_first' onChange={this.onChangeHandler} required></input></td>
+          <td><input type='text' name='p2_first' minLength='3' onChange={this.onChangeHandler} required></input></td>
         </tr>
         <tr>
           <td>Nachname</td>
@@ -134,6 +138,17 @@ class App extends Component {
         </tr>
       </React.Fragment>
     )
+  }
+  verifizierung = () => {
+    console.log(this.state.verifizierungscode)
+    // TODO fetch ans backend
+    let backend_keypass = '0';
+    if (backend_keypass === this.state.verifizierungscode) {
+      this.setState({ websiteNr: 4 })
+    }
+    else {
+      this.setState({ websiteNr: 5 })
+    }
   }
 
   render() {
@@ -176,7 +191,7 @@ class App extends Component {
                 </tr>
                 <tr>
                   <td>Vorname</td>
-                  <td><input type='text' name='p1_first' onChange={this.onChangeHandler} required></input></td>
+                  <td><input type='text' name='p1_first' minLength='3' onChange={this.onChangeHandler} required></input></td>
                 </tr>
                 <tr>
                   <td>Nachname</td>
@@ -221,13 +236,58 @@ class App extends Component {
             <img src={logo} alt='Logo' width='100%' />
           </div>
           <div className='finished'>
+            <h2>Verifizierung deiner Handynummer</h2>
+            <p>Wir haben dir einen Verifizierungscode auf dein Handy per SMS geschickt. Bitte trage die dir zugestellte Nummer in das Feld ein. </p>
+            <form onSubmit={this.verifizierung}>
+              <label>
+                <input type='text' name='verifizierungscode' placeholder='Verifizierungscode' onChange={this.onChangeHandler} required></input><button type='submit' style={{ width: '30vw' }}>verifizieren</button>
+              </label>
+            </form>
+            <p>Solltest du keine SMS erhalten haben, dann kontaktiere uns bitte :)</p>
+          </div>
+        </div>
+      )
+    }
+    if (this.state.websiteNr === 3) {
+      return (
+        <div className='welcomePage'>
+          <div className='pageHeader'>
+            <img src={logo} alt='Logo' width='100%' />
+          </div>
+          <div className='finished'>
+            <h2>Registrierung fehlgeschlagen</h2>
+            <p>Upps, du bist anscheinend schon in unserer Datenbank eingetragen. Bei Fragen kannst du dich gerne jederzeit an uns wenden.</p>
+          </div>
+        </div>
+      )
+    }
+    if (this.state.websiteNr === 4) {
+      return (
+        <div className='welcomePage'>
+          <div className='pageHeader'>
+            <img src={logo} alt='Logo' width='100%' />
+          </div>
+          <div className='finished'>
             <p>
               Herzlichen Glückwunsch, deine Anmeldung war erfolgreich!<br></br><br></br>
               Du erhälst im Laufe der kommenden Woche eine SMS mit dem Namen deines Teampartners, eurem Gang und den Anmerkungen eurer Gäste.<br></br>
               Der erste Gang wird ab <b>18 Uhr</b> serviert. Ihr bekommt kurz zuvor per SMS Bescheid, wohin eure Reise geht.<br></br><br></br>
               Ich freu mich auf dich!</p>
-            <div><iframe title='leo says thanks' src="https://giphy.com/embed/g9582DNuQppxC" width="100%" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div>
+            <div><iframe title='leo says thanks' src="https://giphy.com/embed/g9582DNuQppxC" width="100%" frameBorder="0" className="giphy-embed" allowFullScreen></iframe></div>
             <p style={{ fontSize: '0.1em' }}><a href="https://giphy.com/gifs/hero0fwar-karmawhore-rhyming-g9582DNuQppxC">via GIPHY</a></p>
+          </div>
+        </div>
+      )
+    }
+    if (this.state.websiteNr === 5) {
+      return (
+        <div className='welcomePage'>
+          <div className='pageHeader'>
+            <img src={logo} alt='Logo' width='100%' />
+          </div>
+          <div className='finished'>
+            <h2>Verifizierung fehlgeschlagen</h2>
+            <p>Upps, da ist wohl was schief gegangen...<br></br>Bitte kontaktiere uns, wenn du Probleme bei der Registrierung haben solltest.</p>
           </div>
         </div>
       )
