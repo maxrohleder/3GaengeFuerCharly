@@ -272,6 +272,7 @@ class App extends Component {
           <div className='finished'>
             <p>
               Herzlichen Glückwunsch, deine Anmeldung war erfolgreich!<br></br><br></br>
+              Du erhälst in Kürze eine Validierungs-SMS, die du (und ggf. auch dein Partner-Engel) bestätigen müssen, damit wir euch jederzeit via SMS erreichen können.<br></br>
               Du erhälst im Laufe der kommenden Woche eine SMS mit dem Namen deines Teampartners, eurem Gang und den Anmerkungen eurer Gäste.<br></br>
               Der erste Gang wird ab <b>18 Uhr</b> serviert. Ihr bekommt kurz zuvor per SMS Bescheid, wohin eure Reise geht.<br></br><br></br>
               Ich freu mich auf dich!</p>

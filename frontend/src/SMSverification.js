@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
+import logo from './pageHead.png'
+
 
 const CONFIRM_ROUTE = 'https://gaengefuercharly.ew.r.appspot.com/confirm';
 
