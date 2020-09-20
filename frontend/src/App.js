@@ -94,7 +94,12 @@ class App extends Component {
   onChangeHandler = (event) => {
     let key = event.target.name;
     let val = event.target.value;
-
+    if (key.includes('mobil') && val.length >= 3) {
+      // check if mobil number has +49 at the beginning
+      if (!val.includes("+49")) {
+        alert('Invalid mobil number - no +49 found')
+      }
+    }
     this.setState({ [key]: val });
     console.log(key, val);
   };
