@@ -1,11 +1,14 @@
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
+const shortHash = require("short-hash");
 const bodyParser = require("body-parser");
 const Firestore = require("@google-cloud/firestore");
 
 // constants
 const PRODUCTION = false;
+const COLLECTION_NAME = "angels";
+
 const USER_SECRET = process.env.USER_SECRET;
 const PWD = process.env.ADMIN_SECRET;
 const port = process.env.PORT;
@@ -15,8 +18,6 @@ const FDB = new Firestore({
   projectId: "<project-name>",
   keyFilename: "secrets/<auth-key-firestore>.json",
 });
-const TEAMS = "teams"; // collection names for teams and singles
-const SINGLES = "singles";
 
 // variables
 var welcomeMessage = "Ahoy there!";
@@ -33,14 +34,8 @@ app.use(bodyParser.json()); // to decode payloads in json
 ////////////////////////////////////////////
 
 // inserts the requested data into database if new
-insertTeamIfNew = (data, teamID) => {
+insertIfNew = (data) => {
   // TODO insert new data with ID
-  return true;
-};
-
-// checks existence and inserts if new
-insertSingleIfNew = (data) => {
-  // TODO check and insert as single
   return true;
 };
 
@@ -54,8 +49,16 @@ app.get("/", (req, res) => {
 
 app.post("/register", async (req, res) => {
   welcomeMessage = req.body;
-  console.log("received: \n", req.body);
+  console.log("/register: \n", req.body);
 
+  // validate user secret (shared over whatsapp)
+  if (req.body.data.userSecret !== USER_SECRET) {
+    res.send({ validSecret: false }).status(200);
+    return;
+  }
+
+  var data = req.body;
+  var isNew = true;
   // team or single registration
   if (req.body.isTeam) {
     // create a teamID from first names (alphabetically)
@@ -63,14 +66,25 @@ app.post("/register", async (req, res) => {
     var part2 = req.body.person2.first.substring(0, 3);
     var teamID = part1 < part2 ? part1 + part2 : part2 + part1;
 
-    // check if teamID exists and insert if new
-    var isNew = insertTeamIfNew(req.body.data, teamID);
-    res.send({ isNew: isNew, teamID: teamID }).status(200);
-  } else {
-    // register single person
-    var isNew = insertSingleIfNew(req.body.data);
-    res.send({ isNew: isNew }).status(200);
+    // create entry for person2
+    var person2 = {
+      ...data.person2,
+      isTeam: true,
+      teamId: teamID,
+      kitchen: [data.kitchen],
+      isVerified: false,
+    };
+    if (data.kitchen) {
+      person2["address"] = data.address;
+    }
+
+    // insert person2 if new or no teamId set
+    isNew = insertIfNew(person1);
   }
+
+  // insert person2
+  isNew = insertSingleIfNew(req.body.data) && isNew;
+  res.send({ isNew: isNew }).status(200);
 
   // TODO send passkey via twilio
 });
@@ -84,6 +98,16 @@ app.post("/participants", async (req, res) => {
   } else {
     res.send({ auth: false }).status(401);
   }
+});
+
+app.post("/confirm", async (req, res) => {
+  console.log("received hash: ", userCode);
+  var userCode = req.body.verifyCode;
+  // searches the code in database and sets a verified flag if found
+  var verified = searchAndVerify(userCode);
+  res.send({ isVerified: true });
+  console.log("received code: ", userCode);
+  console.log("valid");
 });
 
 // ##############################################

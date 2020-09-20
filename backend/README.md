@@ -1,5 +1,34 @@
 # Backend service for Charlies Laufgelage
 
+## Database model
+
+This is how a database entry shall look like:
+
+```js
+{
+  angels: [
+    ("Mustermann": {
+      first: "Max",
+      last: "Mustermann",
+      isTeam: true,
+      teamId: ChaMax,
+      kitchen: true,
+      address: {
+        street: "Musterstreet",
+        number: 123,
+        postal: 91052,
+      },
+      mobile: 015123533048,
+      covid: false,
+      allergy: "",
+      afterparty: true,
+      isVerified: false,
+    }),
+    ("Musterfrau": { ... }),
+  ];
+}
+```
+
 ## Instructions
 
 ### _Local Development:_
