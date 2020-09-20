@@ -72,12 +72,10 @@ class SMSverification extends Component {
           <div className="finished">
             <h2>Deine Verifizierung war erfolgreich</h2>
             <p>
-              Super, deine Handynummer wurde soeben verifiziert. Du bist jetzt
-              ein flugbereiter Endel!<br></br>
-              <bold>
+              Super, deine Handynummer wurde soeben verifiziert. <br></br>Du bist jetzt
+              ein flugbereiter Engel!<br></br>
                 Bitte erinnere auch ggf. deinen Partner-Engel daran, seine
-                Nummer zu validieren
-              </bold>
+                Nummer zu validieren.
             </p>
           </div>
         </div>
