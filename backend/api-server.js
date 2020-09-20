@@ -12,11 +12,14 @@ const COLLECTION_NAME = "angels";
 const USER_SECRET = process.env.USER_SECRET;
 const PWD = process.env.ADMIN_SECRET;
 const port = process.env.PORT;
+// constants for twilio
+const accountSid = process.env.accountSid;
+const authToken = process.env.authToken;
+const client = require('twilio')(accountSid, authToken)
 
 // database
 const FDB = new Firestore({
-  projectId: "<project-name>",
-  keyFilename: "secrets/<auth-key-firestore>.json",
+  keyFilename: "secrets/gaengefuercharly-db-key.json",
 });
 
 // variables
@@ -87,6 +90,17 @@ app.post("/register", async (req, res) => {
   res.send({ isNew: isNew }).status(200);
 
   // TODO send passkey via twilio
+  // TODO generate validation link
+  var link = None;
+  var user_mobil = None;
+  var msg_body = 'Bitte bestätige über diesen Link deine Handynummer für das Laufgelage: ' + link;
+  client.messages
+    .create({
+      body: msg_body,
+      from: '+18443114577',
+      to: user_mobil,
+    })
+    .then(message => console.log(message.sid))
 });
 
 app.post("/participants", async (req, res) => {

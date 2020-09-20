@@ -9,13 +9,14 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      websiteNr: 2,
+      websiteNr: 0,
+      userSecret: '',
       p1_first: '',
       p1_last: '',
       p1_mobil: '',
       p1_allergy: '',
       p1_afterparty: '',
-      isTeam: '',
+      isTeam: false,
       p2_first: '',
       p2_last: '',
       p2_mobile: '',
@@ -26,7 +27,6 @@ class App extends Component {
       number: '',
       postal: '',
       covid: '',
-      verifizierungscode: '',
       registerSuccess: false,
     };
   }
@@ -38,6 +38,7 @@ class App extends Component {
   sendRegisterform = (event) => {
     event.preventDefault();
     var payload = JSON.stringify({
+      userSecret: this.userSecret,
       person1: {
         first: this.state.p1_first,
         last: this.state.p1_last,
@@ -70,12 +71,21 @@ class App extends Component {
       console.log(data);
       this.setState({
         registerSuccess: data.isNew,
+        userSecret: data.userSecret,
       })
-      if (data.isNew) {
-        this.setState({ websiteNr: 2 })
+      if (data.userSecret) {
+        if (data.isNew) {
+          // registration form is valid and password is correct
+          this.setState({ websiteNr: 5 })
+        }
+        else {
+          // registration form is invalid - user already exists
+          this.setState({ websiteNr: 4 })
+        }
       }
       else {
-        this.setState({ websiteNr: 3 })
+        // invalid user secret
+        this.setState({ websiteNr: 2 })
       }
     }).catch((err) => {
       console.log('Something went wrong during the registration', err)
@@ -108,8 +118,8 @@ class App extends Component {
           <td><input type='text' name='p2_last' onChange={this.onChangeHandler} required></input></td>
         </tr>
         <tr>
-          <td>Handynummer</td>
-          <td><input type='number' name='p2_mobil' onChange={this.onChangeHandler} required></input></td>
+          <td>Handynummer (+49...)</td>
+          <td><input type='number' name='p2_mobil' placeholder='+49123' onChange={this.onChangeHandler} required></input></td>
         </tr>
         <tr>
           <td>Unverträglichkeiten/<br></br>Einschränkungen</td>
@@ -139,19 +149,9 @@ class App extends Component {
       </React.Fragment>
     )
   }
-  verifizierung = () => {
-    console.log(this.state.verifizierungscode)
-    // TODO fetch ans backend
-    let backend_keypass = '0';
-    if (backend_keypass === this.state.verifizierungscode) {
-      this.setState({ websiteNr: 4 })
-    }
-    else {
-      this.setState({ websiteNr: 5 })
-    }
-  }
 
   render() {
+    // welcome page
     if (this.state.websiteNr === 0) {
       return (
         <div className='welcomePage'>
@@ -176,6 +176,7 @@ class App extends Component {
         </div>
       )
     }
+    // registration form
     if (this.state.websiteNr === 1) {
       return (
         <div className='welcomePage'>
@@ -190,6 +191,10 @@ class App extends Component {
                   <th>Engel Nr. 1</th>
                 </tr>
                 <tr>
+                  <td>Passwort</td>
+                  <td><input type='password' name='userSecret' onChange={this.onChangeHandler} required></input></td>
+                </tr>
+                <tr>
                   <td>Vorname</td>
                   <td><input type='text' name='p1_first' minLength='3' onChange={this.onChangeHandler} required></input></td>
                 </tr>
@@ -198,8 +203,8 @@ class App extends Component {
                   <td><input type='text' name='p1_last' onChange={this.onChangeHandler} required></input></td>
                 </tr>
                 <tr>
-                  <td>Handynummer</td>
-                  <td><input type='number' name='p1_mobil' onChange={this.onChangeHandler} required></input></td>
+                  <td>Handynummer (+49...)</td>
+                  <td><input type='number' name='p1_mobil' placeholder='+49123' onChange={this.onChangeHandler} required></input></td>
                 </tr>
                 <tr>
                   <td>Unverträglichkeiten/<br></br>Einschränkungen</td>
@@ -229,6 +234,7 @@ class App extends Component {
         </div >
       )
     }
+    // user entered wrong user secret
     if (this.state.websiteNr === 2) {
       return (
         <div className='welcomePage'>
@@ -236,19 +242,14 @@ class App extends Component {
             <img src={logo} alt='Logo' width='100%' />
           </div>
           <div className='finished'>
-            <h2>Verifizierung deiner Handynummer</h2>
-            <p>Wir haben dir einen Verifizierungscode auf dein Handy per SMS geschickt. Bitte trage die dir zugestellte Nummer in das Feld ein. </p>
-            <form onSubmit={this.verifizierung}>
-              <label>
-                <input type='text' name='verifizierungscode' placeholder='Verifizierungscode' onChange={this.onChangeHandler} required></input><button type='submit' style={{ width: '30vw' }}>verifizieren</button>
-              </label>
-            </form>
-            <p>Solltest du keine SMS erhalten haben, dann kontaktiere uns bitte :)</p>
+            <h2>Ungültiges Passwort</h2>
+            <p>Das von dir eingetragene Passwort entspricht nicht dem in der WhatsApp-Gruppe. Bitte lade diese Seite neu und überprüfe deine Einträge.</p>
           </div>
         </div>
       )
     }
-    if (this.state.websiteNr === 3) {
+    // error: user already in data base
+    if (this.state.websiteNr === 4) {
       return (
         <div className='welcomePage'>
           <div className='pageHeader'>
@@ -261,7 +262,8 @@ class App extends Component {
         </div>
       )
     }
-    if (this.state.websiteNr === 4) {
+    // successful registration - finished page
+    if (this.state.websiteNr === 5) {
       return (
         <div className='welcomePage'>
           <div className='pageHeader'>
@@ -270,6 +272,7 @@ class App extends Component {
           <div className='finished'>
             <p>
               Herzlichen Glückwunsch, deine Anmeldung war erfolgreich!<br></br><br></br>
+              Du erhälst in Kürze eine Validierungs-SMS, die du (und ggf. auch dein Partner-Engel) bestätigen müssen, damit wir euch jederzeit via SMS erreichen können.<br></br>
               Du erhälst im Laufe der kommenden Woche eine SMS mit dem Namen deines Teampartners, eurem Gang und den Anmerkungen eurer Gäste.<br></br>
               Der erste Gang wird ab <b>18 Uhr</b> serviert. Ihr bekommt kurz zuvor per SMS Bescheid, wohin eure Reise geht.<br></br><br></br>
               Ich freu mich auf dich!</p>
@@ -279,20 +282,6 @@ class App extends Component {
         </div>
       )
     }
-    if (this.state.websiteNr === 5) {
-      return (
-        <div className='welcomePage'>
-          <div className='pageHeader'>
-            <img src={logo} alt='Logo' width='100%' />
-          </div>
-          <div className='finished'>
-            <h2>Verifizierung fehlgeschlagen</h2>
-            <p>Upps, da ist wohl was schief gegangen...<br></br>Bitte kontaktiere uns, wenn du Probleme bei der Registrierung haben solltest.</p>
-          </div>
-        </div>
-      )
-    }
-
   }
 
 }
