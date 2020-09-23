@@ -7,3 +7,8 @@ secrets/
 
 # test files 
 development
+
+# make sure not to push all secrets (again)
+app.yaml
+
+.DS_Store

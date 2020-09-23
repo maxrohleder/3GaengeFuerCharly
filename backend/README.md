@@ -24,6 +24,11 @@ This is how a database entry shall look like:
       allergy: "",
       afterparty: true,
       isVerified: false,
+      course: 'starter',
+      guests: {
+        team1: 'AnnTee',
+        team2: 'LarMat',
+      }
     }),
     ("Musterfrau": { ... }),
   ];

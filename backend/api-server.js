@@ -4,6 +4,7 @@ const cors = require("cors");
 const shortHash = require("short-hash");
 const bodyParser = require("body-parser");
 const Firestore = require("@google-cloud/firestore");
+const { strict } = require("assert");
 
 // constants
 const PRODUCTION = false;
@@ -13,6 +14,7 @@ var VERIFY_MSG =
 const USER_SECRET = process.env.USER_SECRET;
 const PWD = process.env.ADMIN_SECRET;
 const port = process.env.PORT;
+const ADMIN_SECRET = process.env.ADMIN_SECRET;
 
 // constants for twilio
 const accountSid = process.env.accountSid;
@@ -98,6 +100,39 @@ const searchAndVerify = async (userCode) => {
   }
 };
 
+// search for course
+// inform all guests that they should come to their hosts address
+const sendMission = async (course) => {
+  var docRef = ANGELS.where("course", "==", course);
+  try {
+    var snapshot = await docRef.get();
+    if (snapshot.empty) {
+      console.log("Course does not exist - typo", course);
+      return false;
+    } else {
+      snapshot.forEach(async (doc) => {
+        console.log(doc.id, '=>', doc.data());
+        var missNr;
+        if (course === 'starter') {
+          missNr = 1;
+        }
+        else if (course === 'main') {
+          missNr = 2;
+        }
+        else if (course === 'dessert') {
+          missNr = 4;
+        }
+        var msg = 'Mission Nr. ' + missNr + '\nAdresse: ' + doc.address.street + doc.address.number + '\nSuche: '; // FIXME
+      });
+
+      return true
+    }
+  } catch (err) {
+    console.log("Error send mission", err);
+    return false;
+  }
+};
+
 // -----------------------------------------
 // -----------------routes -----------------
 // -----------------------------------------
@@ -175,6 +210,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
+// IGONORE: test route
 app.post("/participants", async (req, res) => {
   var pwd = req.body.pwd;
   console.log(req.body);
@@ -186,6 +222,7 @@ app.post("/participants", async (req, res) => {
   }
 });
 
+// confirm the mobil number of the participant and set the variable isVerified = true
 app.post("/confirm", async (req, res) => {
   var userCode = req.body.verifyCode;
   console.log("received hash: ", userCode);
@@ -194,6 +231,30 @@ app.post("/confirm", async (req, res) => {
   var verified = await searchAndVerify(userCode);
   res.send({ isVerified: verified });
 });
+
+// tell teams to which address they should go next
+app.post('/mission', async (req, res) => {
+  var data = req.body;
+  // validate admin secret
+  if (data.adminSecret !== ADMIN_SECRET) {
+    res.send({ validSecret: false }).status(200);
+    console.log("invalid admin secret! ", data.userSecret, ADMIN_SECRET);
+    return;
+  }
+
+})
+
+// inform teams about their courses and the allergies of their guests
+app.post('/inform', async (req, res) => {
+  var data = req.body;
+  // validate admin secret
+  if (data.adminSecret !== ADMIN_SECRET) {
+    res.send({ validSecret: false }).status(200);
+    console.log("invalid admin secret! ", data.userSecret, ADMIN_SECRET);
+    return;
+  }
+
+})
 
 // ##############################################
 // ############# start service ##################
