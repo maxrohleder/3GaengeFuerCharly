@@ -119,8 +119,14 @@ const sendMission = async (course) => {
         else if (course === 'main') {
           missNr = 2;
         }
+        else if (course == 'flunky') {
+          missNr = 3;
+        }
         else if (course === 'dessert') {
           missNr = 4;
+        }
+        else if (course == 'bar') {
+
         }
         var msg = 'Mission Nr. ' + missNr + '\nAdresse: ' + doc.address.street + doc.address.number + '\nSuche: '; // FIXME
       });
@@ -133,6 +139,48 @@ const sendMission = async (course) => {
   }
 };
 
+
+// send courses and allergies of guests
+const inform = async () => {
+  var docRef = ANGELS;
+  try {
+    var snapshot = await docRef.get();
+    if (snapshot.empty) {
+      console.log("Course does not exist - typo", course);
+      return false;
+    } else {
+      snapshot.forEach(async (doc) => {
+        console.log(doc.id, '=>', doc.data());
+        if (doc.course === undefined) {
+
+        }
+
+        var missNr;
+        if (doc.course === 'starter') {
+          missNr = 1;
+        }
+        else if (course === 'main') {
+          missNr = 2;
+        }
+        else if (course == 'flunky') {
+          missNr = 3;
+        }
+        else if (course === 'dessert') {
+          missNr = 4;
+        }
+        else if (course == 'bar') {
+
+        }
+        var msg = 'Mission Nr. ' + missNr + '\nAdresse: ' + doc.address.street + doc.address.number + '\nSuche: '; // FIXME
+      });
+
+      return true
+    }
+  } catch (err) {
+    console.log("Error send mission", err);
+    return false;
+  }
+}
 // -----------------------------------------
 // -----------------routes -----------------
 // -----------------------------------------

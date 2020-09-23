@@ -89,3 +89,52 @@ The following routes define the Api interface between frontend and backend logic
     "isVerified": bool,
 }
 ```
+
+
+> Used to inform participants about their course and their guest's allergies
+>
+> HTTP-POST: _/inform_
+
+> <br> ANSWER: 200 OK
+> <br>JSON-PAYLOAD:
+
+```js
+{
+    "adminSecret": string,
+}
+```
+
+> {
+> <br> ANSWER: 200 OK
+> <br>JSON-PAYLOAD:
+
+
+> Used to send to next mission
+>
+> HTTP-POST: _/mission_
+
+> <br> ANSWER: 200 OK
+> <br>JSON-PAYLOAD:
+
+```js
+{
+    "adminSecret": string,
+    "mission": string,
+}
+```
+
+> {
+> <br> ANSWER: 200 OK
+> <br>JSON-PAYLOAD:
+
+```js
+{
+    "numSMS": int,
+}
+```
+> **Mission:**
+> + starter
+> + flunky
+> + main
+> + dessert
+> + bar
