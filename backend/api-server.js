@@ -67,8 +67,8 @@ const insertIfNew = async (data) => {
 };
 
 const sendSMS = (mobile, msg_body) => {
-  console.log("Sending SMS to " + mobile + "\n\t" + msg_body);
   if (PRODUCTION) {
+    console.log("Sending SMS to " + mobile + "\n\t" + msg_body);
     client.messages
       .create({
         body: msg_body,
@@ -184,10 +184,19 @@ const inform = async () => {
         msg += doc.data().course + "!";
 
         var allergies = "";
+        var teamConstellation =
+          doc.id +
+          " (" +
+          doc.data().teamId +
+          ", " +
+          doc.data().course +
+          ") --> ";
         for (var prop in doc.data().guests) {
           var teamName = doc.data().guests[prop];
+          teamConstellation += doc.data().guests[prop] + " ";
           allergies += await retrieveAllergiesFor(teamName);
         }
+        console.log(teamConstellation);
 
         if (allergies !== "") {
           msg += " Beachte diese Allergien: " + allergies;
