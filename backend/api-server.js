@@ -27,6 +27,9 @@ const FDB = new Firestore({
   keyFilename: "secrets/gaengefuercharly-db-key.json",
 });
 let ANGELS = FDB.collection("angels");
+let VORSPEISE = FDB.collection('vorspeise');
+let HAUPTSPEISE = FDB.collection('hauptspeise');
+let DESSERT = FDB.collection('dessert');
 
 // variables
 var welcomeMessage = "Ahoy there!";
@@ -100,9 +103,104 @@ const searchAndVerify = async (userCode) => {
   }
 };
 
+
+// create new databases depending on the courses
+// KEY = teamId, ring: last_1 & last_2, address, guests
+const splitCourses = async () => {
+  var angleDoc = ANGELS;
+  try {
+    var snapshot = await angleDoc.get();
+    if (snapshot.empty) {
+      console.log('no entries in Angels');
+      return 0;
+    }
+    // walk through whole database
+    // split persons depending on their course in 3 sub-databases
+    // per sub-database: 1 teamId
+    await snapshot.forEach(async (person) => {
+      var db_str = person.data().course;
+      // choose new database depending on course
+      var new_db;
+      if (db_str === 'Vorspeise') {
+        new_db = VORSPEISE;
+      }
+      else if (db_str === 'Hauptspeise') {
+        new_db = HAUPTSPEISE;
+      }
+      else if (db_str === 'Dessert') {
+        new_db = DESSERT;
+      }
+      else {
+        console.log('No course found for ' + doc.id)
+        return 0;
+      }
+      // check if new database already has the teamId as an key entry
+      let teamId = person.data().teamID;
+      let docRef = new_db.doc(teamId);
+      let docPrev = await docRef.get();
+      // no entry in database with teamId of this person
+      if (docPrev.empty) {
+        // create new document in database
+        var newTeam = {
+          teamId = teamId,
+          address = person.data().address,
+          ring = person.data().last,
+          guests = person.data().guests,
+        };
+        docRef.set(newTeam);
+      } else {
+        // entry exists in database -> only add the last name of the second person
+        new_ring = docPrev.data().ring + ', ' + person.data().last;
+        await new_db.doc(teamId).update({ ring: new_ring });
+      };
+
+    })
+    return 1;
+  } catch (err) {
+    console.log('error split courses');
+    return 0;
+  }
+};
+
+
 // search for course
 // inform all guests that they should come to their hosts address
 const sendMission = async (course) => {
+  var db;
+  var msg;
+  var numSMS = 0;
+  if (course === 'Vorspeise') {
+    db = Vorspeise;
+  } else if (course === 'Flunkyball') {
+    // exeption
+    msg = 'Sonderauftrag: Begebe dich sofort zum Bohlenplatz. Bring ein GESCHLOSSENES Bier mit!';
+    var docRef = ANGELS;
+    try {
+      var snapshot = await docRef.get();
+      if (snapshot.empty) {
+        console.log('no angles found');
+        return 0;
+      }
+      await snapshot.forEach(async (person) => {
+        sendSMS(person.data().mobil, msg);
+        numSMS += 1;
+      })
+    } catch (err) {
+      console.log('error sending flunky');
+      return 0;
+    }
+  } else if (course === 'Hauptspeise') {
+    db = Hauptspeise;
+  } else if (course === 'Dessert') {
+    db = Dessert;
+  } else {
+    console.log('no course found');
+    return 0;
+  }
+
+
+
+
   var docRef = ANGELS.where("course", "==", course);
   try {
     var snapshot = await docRef.get();
@@ -132,7 +230,7 @@ const sendMission = async (course) => {
           "\nSuche: "; // FIXME
       });
 
-      return true;
+      return numSMS;
     }
   } catch (err) {
     console.log("Error send mission", err);
@@ -312,6 +410,9 @@ app.post("/mission", async (req, res) => {
     console.log("invalid admin secret! ", data.userSecret, ADMIN_SECRET);
     return;
   }
+  var numSMS = await sendMission(data.course);
+  console.log('I sent ' + numSMS + ' SMS');
+  res.send({ validSecret: true, numSMS: numSms }).status(200);
 });
 
 // inform teams about their courses and the allergies of their guests
@@ -330,6 +431,23 @@ app.post("/inform", async (req, res) => {
   console.log("I sent " + numSms + " SMS");
   res.send({ validSecret: true, numSMS: numSms }).status(200);
 });
+
+// split angel database into 3 groups depending on their course
+app.post("/split", async (req, res) => {
+  var data = req.body;
+
+  // validate admin secret
+  if (data.adminSecret !== ADMIN_SECRET) {
+    res.send({ validSecret: false }).status(200);
+    console.log("[/inform] invalid secret ", data.adminSecret, ADMIN_SECRET);
+    return;
+  }
+
+  var spliting = await splitCourses();
+  console.log('Finished: ', spliting);
+  res.send({ validSecret: true }).status(200);
+
+})
 
 // ##############################################
 // ############# start service ##################
