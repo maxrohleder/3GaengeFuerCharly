@@ -192,7 +192,11 @@ const inform = async () => {
         if (allergies !== "") {
           msg += " Beachte diese Allergien: " + allergies;
         }
-        sendSMS(doc.data().mobil, msg);
+        if (doc.data().isVerified) {
+          sendSMS(doc.data().mobil, msg);
+        } else {
+          console.log("ERROR not verified: ", doc.id);
+        }
 
         numberSms += 1;
       }
