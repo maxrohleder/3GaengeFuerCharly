@@ -163,6 +163,41 @@ const splitCourses = async () => {
 // search for course
 // inform all guests that they should come to their hosts address
 const sendMission = async (course) => {
+  var db;
+  var msg;
+  var numSMS = 0;
+  if (course === 'Vorspeise') {
+    db = Vorspeise;
+  } else if (course === 'Flunkyball') {
+    // exeption
+    msg = 'Sonderauftrag: Begebe dich sofort zum Bohlenplatz. Bring ein GESCHLOSSENES Bier mit!';
+    var docRef = ANGELS;
+    try {
+      var snapshot = await docRef.get();
+      if (snapshot.empty) {
+        console.log('no angles found');
+        return 0;
+      }
+      await snapshot.forEach(async (person) => {
+        sendSMS(person.data().mobil, msg);
+        numSMS += 1;
+      })
+    } catch (err) {
+      console.log('error sending flunky');
+      return 0;
+    }
+  } else if (course === 'Hauptspeise') {
+    db = Hauptspeise;
+  } else if (course === 'Dessert') {
+    db = Dessert;
+  } else {
+    console.log('no course found');
+    return 0;
+  }
+
+
+
+
   var docRef = ANGELS.where("course", "==", course);
   try {
     var snapshot = await docRef.get();
@@ -192,7 +227,7 @@ const sendMission = async (course) => {
           "\nSuche: "; // FIXME
       });
 
-      return true;
+      return numSMS;
     }
   } catch (err) {
     console.log("Error send mission", err);
@@ -359,6 +394,9 @@ app.post("/mission", async (req, res) => {
     console.log("invalid admin secret! ", data.userSecret, ADMIN_SECRET);
     return;
   }
+  var numSMS = await sendMission(data.course);
+  console.log('I sent ' + numSMS + ' SMS');
+  res.send({ validSecret: true, numSMS: numSms }).status(200);
 });
 
 // inform teams about their courses and the allergies of their guests
