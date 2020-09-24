@@ -67,7 +67,7 @@ const insertIfNew = async (data) => {
 };
 
 const sendSMS = (mobile, msg_body) => {
-  console.log("Sending SMS to ", mobile);
+  console.log("Sending SMS to " + mobile + "\n\t" + msg_body);
   if (PRODUCTION) {
     client.messages
       .create({
@@ -117,17 +117,19 @@ const sendMission = async (course) => {
           missNr = 1;
         } else if (course === "main") {
           missNr = 2;
-        }
-        else if (course == 'flunky') {
+        } else if (course == "flunky") {
           missNr = 3;
-        }
-        else if (course === 'dessert') {
+        } else if (course === "dessert") {
           missNr = 4;
+        } else if (course == "bar") {
         }
-        else if (course == 'bar') {
-
-        }
-        var msg = 'Mission Nr. ' + missNr + '\nAdresse: ' + doc.address.street + doc.address.number + '\nSuche: '; // FIXME
+        var msg =
+          "Mission Nr. " +
+          missNr +
+          "\nAdresse: " +
+          doc.address.street +
+          doc.address.number +
+          "\nSuche: "; // FIXME
       });
 
       return true;
@@ -138,48 +140,69 @@ const sendMission = async (course) => {
   }
 };
 
+const retrieveAllergiesFor = async (teamName) => {
+  // console.log("retrieving allergies for: ", teamName);
+  var docRef = ANGELS.where("teamId", "==", teamName);
+  try {
+    var docPrev = await docRef.get();
+    var allergies = "";
+    // this case should never happen
+    if (docPrev.empty) {
+      console.log("ALERT No such teamId", teamName);
+      return "";
+    }
+
+    // append allergies of team Member followed by comma
+    docPrev.forEach((doc) => {
+      if (doc.data().allergy !== "") {
+        allergies += doc.data().allergy + ", ";
+      }
+    });
+
+    return allergies;
+  } catch (err) {
+    console.log("error retrieving allergies ", err);
+  }
+};
 
 // send courses and allergies of guests
 const inform = async () => {
   var docRef = ANGELS;
+  var numberSms = 0;
   try {
     var snapshot = await docRef.get();
     if (snapshot.empty) {
       console.log("Course does not exist - typo", course);
-      return false;
-    } else {
-      snapshot.forEach(async (doc) => {
-        console.log(doc.id, '=>', doc.data());
-        if (doc.course === undefined) {
-
-        }
-
-        var missNr;
-        if (doc.course === 'starter') {
-          missNr = 1;
-        }
-        else if (course === 'main') {
-          missNr = 2;
-        }
-        else if (course == 'flunky') {
-          missNr = 3;
-        }
-        else if (course === 'dessert') {
-          missNr = 4;
-        }
-        else if (course == 'bar') {
-
-        }
-        var msg = 'Mission Nr. ' + missNr + '\nAdresse: ' + doc.address.street + doc.address.number + '\nSuche: '; // FIXME
-      });
-
-      return true
+      return 0;
     }
+
+    // look at all participants which have a course set
+    await snapshot.forEach(async (doc) => {
+      if (doc.data().course !== undefined) {
+        // preparing message for person1
+        var msg = "Hallo " + doc.data().first + "! Dein Gang ist: ";
+        msg += doc.data().course + "!";
+
+        var allergies = "";
+        for (var prop in doc.data().guests) {
+          var teamName = doc.data().guests[prop];
+          allergies += await retrieveAllergiesFor(teamName);
+        }
+
+        if (allergies !== "") {
+          msg += " Beachte diese Allergien: " + allergies;
+        }
+        sendSMS(doc.data().mobil, msg);
+
+        numberSms += 1;
+      }
+    });
+    return numberSms;
   } catch (err) {
     console.log("Error send mission", err);
-    return false;
+    return 0;
   }
-}
+};
 // -----------------------------------------
 // -----------------routes -----------------
 // -----------------------------------------
@@ -281,12 +304,18 @@ app.post("/mission", async (req, res) => {
 // inform teams about their courses and the allergies of their guests
 app.post("/inform", async (req, res) => {
   var data = req.body;
+
   // validate admin secret
   if (data.adminSecret !== ADMIN_SECRET) {
     res.send({ validSecret: false }).status(200);
-    console.log("invalid admin secret! ", data.userSecret, ADMIN_SECRET);
+    console.log("[/inform] invalid secret ", data.adminSecret, ADMIN_SECRET);
     return;
   }
+
+  // send the inital sms as listed in the db
+  var numSms = await inform();
+  console.log("I sent " + numSms + " SMS");
+  res.send({ validSecret: true, numSMS: numSms }).status(200);
 });
 
 // ##############################################

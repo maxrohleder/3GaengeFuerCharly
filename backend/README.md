@@ -19,16 +19,16 @@ This is how a database entry shall look like:
         number: 123,
         postal: 91052,
       },
-      mobile: 015123533048,
+      mobil: 015123533048,
       covid: false,
       allergy: "",
       afterparty: true,
       isVerified: false,
-      course: 'starter',
+      course: "Vorspeise",
       guests: {
-        team1: 'AnnTee',
-        team2: 'LarMat',
-      }
+        team1: "AnnTee",
+        team2: "LarMat",
+      },
     }),
     ("Musterfrau": { ... }),
   ];

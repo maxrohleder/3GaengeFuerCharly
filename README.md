@@ -90,7 +90,6 @@ The following routes define the Api interface between frontend and backend logic
 }
 ```
 
-
 > Used to inform participants about their course and their guest's allergies
 >
 > HTTP-POST: _/inform_
@@ -108,6 +107,12 @@ The following routes define the Api interface between frontend and backend logic
 > <br> ANSWER: 200 OK
 > <br>JSON-PAYLOAD:
 
+```js
+{
+    "validSecret": bool,
+    "numSMS": int,
+}
+```
 
 > Used to send to next mission
 >
@@ -129,12 +134,13 @@ The following routes define the Api interface between frontend and backend logic
 
 ```js
 {
+    "validSecret": bool,
     "numSMS": int,
 }
 ```
+
 > **Mission:**
-> + starter
-> + flunky
-> + main
-> + dessert
-> + bar
+>
+> - Vorspeise
+> - Hauptspeise
+> - Dessert
