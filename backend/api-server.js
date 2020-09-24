@@ -27,6 +27,9 @@ const FDB = new Firestore({
   keyFilename: "secrets/gaengefuercharly-db-key.json",
 });
 let ANGELS = FDB.collection("angels");
+let Vorspeise = FDB.collection('vorspeise');
+let Hauptspeise = FDB.collection('hauptspeise');
+let Dessert = FDB.collection('dessert');
 
 // variables
 var welcomeMessage = "Ahoy there!";
@@ -99,6 +102,63 @@ const searchAndVerify = async (userCode) => {
     return false;
   }
 };
+
+
+// create new databases depending on the courses
+// KEY = teamId, ring: last_1 & last_2, address, guests
+const splitCourses = async () => {
+  var angleDoc = ANGELS;
+  try {
+    var snapshot = await angleDoc.get();
+    if (snapshot.empty) {
+      console.log('no entries in Angels');
+      return 0;
+    }
+    // walk through whole database
+    // split persons depending on their course in 3 sub-databases
+    // per sub-database: 1 teamId
+    await snapshot.forEach(async (person) => {
+      var db_str = person.data().course;
+      // choose new database depending on course
+      var new_db;
+      if (db_str === 'Vorspeise') {
+        new_db = Vorspeise;
+      }
+      else if (db_str === 'Hauptspeise') {
+        new_db = Hauptspeise;
+      }
+      else if (db_str === 'Dessert') {
+        new_db = Dessert;
+      }
+      else {
+        console.log('No course found for ' + doc.data().id)
+      }
+      // check if new database already has the teamId as an key entry
+      let teamId = person.data().teamID;
+      let docRef = new_db.doc(teamId);
+      let docPrev = await docRef.get();
+      // no entry in database with teamId of this person
+      if (docPrev.empty) {
+        // create new document in database
+        var newTeam = {
+          teamId = teamId,
+          address = person.data().address,
+          ring = person.data().last,
+          guests = person.data().guests,
+        };
+        docRef.set(newTeam);
+      }
+      // entry exists in database -> only add the last name of the second person
+      new_ring = docPrev.data().ring + ', ' + person.data().last;
+      await new_db.doc(teamId).update({ ring: new_ring });
+    })
+    return 1;
+  } catch (err) {
+    console.log('error split courses');
+    return 0;
+  }
+};
+
 
 // search for course
 // inform all guests that they should come to their hosts address
@@ -317,6 +377,23 @@ app.post("/inform", async (req, res) => {
   console.log("I sent " + numSms + " SMS");
   res.send({ validSecret: true, numSMS: numSms }).status(200);
 });
+
+// split angle database into 3 groups depending on their course
+app.post("/split", async (req, res) => {
+  var data = req.body;
+
+  // validate admin secret
+  if (data.adminSecret !== ADMIN_SECRET) {
+    res.send({ validSecret: false }).status(200);
+    console.log("[/inform] invalid secret ", data.adminSecret, ADMIN_SECRET);
+    return;
+  }
+
+  var spliting = await splitCourses();
+  console.log('Finished');
+  res.send({ validSecret: true }).status(200);
+
+})
 
 // ##############################################
 // ############# start service ##################
