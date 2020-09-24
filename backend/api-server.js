@@ -27,9 +27,9 @@ const FDB = new Firestore({
   keyFilename: "secrets/gaengefuercharly-db-key.json",
 });
 let ANGELS = FDB.collection("angels");
-let Vorspeise = FDB.collection('vorspeise');
-let Hauptspeise = FDB.collection('hauptspeise');
-let Dessert = FDB.collection('dessert');
+let VORSPEISE = FDB.collection('vorspeise');
+let HAUPTSPEISE = FDB.collection('hauptspeise');
+let DESSERT = FDB.collection('dessert');
 
 // variables
 var welcomeMessage = "Ahoy there!";
@@ -122,16 +122,17 @@ const splitCourses = async () => {
       // choose new database depending on course
       var new_db;
       if (db_str === 'Vorspeise') {
-        new_db = Vorspeise;
+        new_db = VORSPEISE;
       }
       else if (db_str === 'Hauptspeise') {
-        new_db = Hauptspeise;
+        new_db = HAUPTSPEISE;
       }
       else if (db_str === 'Dessert') {
-        new_db = Dessert;
+        new_db = DESSERT;
       }
       else {
-        console.log('No course found for ' + doc.data().id)
+        console.log('No course found for ' + doc.id)
+        return 0;
       }
       // check if new database already has the teamId as an key entry
       let teamId = person.data().teamID;
@@ -147,10 +148,12 @@ const splitCourses = async () => {
           guests = person.data().guests,
         };
         docRef.set(newTeam);
-      }
-      // entry exists in database -> only add the last name of the second person
-      new_ring = docPrev.data().ring + ', ' + person.data().last;
-      await new_db.doc(teamId).update({ ring: new_ring });
+      } else {
+        // entry exists in database -> only add the last name of the second person
+        new_ring = docPrev.data().ring + ', ' + person.data().last;
+        await new_db.doc(teamId).update({ ring: new_ring });
+      };
+
     })
     return 1;
   } catch (err) {
@@ -416,7 +419,7 @@ app.post("/inform", async (req, res) => {
   res.send({ validSecret: true, numSMS: numSms }).status(200);
 });
 
-// split angle database into 3 groups depending on their course
+// split angel database into 3 groups depending on their course
 app.post("/split", async (req, res) => {
   var data = req.body;
 
@@ -428,7 +431,7 @@ app.post("/split", async (req, res) => {
   }
 
   var spliting = await splitCourses();
-  console.log('Finished');
+  console.log('Finished: ', spliting);
   res.send({ validSecret: true }).status(200);
 
 })
