@@ -114,32 +114,44 @@ const splitCourses = async () => {
     // per sub-database: 1 teamId
     await snapshot.forEach(async (person) => {
       // choose new database depending on course
-      console.log("using collection: ", person.data().course);
-      let new_db = FDB.collection(person.data().course);
-      // check if new database already has the teamId as an key entry
-      let teamId = person.data().teamId;
-      console.log("teamId: ", teamId);
-      let docRef = new_db.doc(teamId);
-      let docPrev = await docRef.get();
-      // no entry in database with teamId of this person
-      if (docPrev.empty) {
-        // create new document in database
-        var newTeam = {
-          teamId: teamId,
-          address: person.data().address,
-          ring: person.data().last,
-          guests: person.data().guests,
-        };
-        await docRef.set(newTeam);
+      var course = person.data().course;
+
+      if (course === "" || course === undefined) {
+        console.log("invalid course: " + person.id);
       } else {
-        // entry exists in database -> only add the last name of the second person
-        new_ring = docPrev.data().ring + ", " + person.data().last;
-        await new_db.doc(teamId).update({ ring: new_ring });
+        // check if new database already has the teamId as an key entry
+        let teamId = person.data().teamId;
+        let docRef = FDB.collection(course).doc(teamId);
+        try {
+          let docPrev = await docRef.get();
+          // no entry in database with teamId of this person
+          if (!docPrev.exists) {
+            // create new document in database
+            var newTeam = {
+              teamId: teamId,
+              address: person.data().address,
+              ring: person.data().last,
+              guests: person.data().guests,
+            };
+            await docRef.set(newTeam);
+          } else {
+            console.log(
+              "teamId exists. updating ring with: ",
+              person.data().last
+            );
+            // entry exists in database -> only add the last name of the second person
+            var new_ring = docPrev.data().ring + ", " + person.data().last;
+            console.log(new_ring);
+            await FDB.collection(course).doc(teamId).update({ ring: new_ring });
+          }
+        } catch (err) {
+          console.log("error in async function forEach ", err);
+        }
       }
     });
     return 1;
   } catch (err) {
-    console.log("error split courses");
+    console.log("error split courses", err);
     return 0;
   }
 };
