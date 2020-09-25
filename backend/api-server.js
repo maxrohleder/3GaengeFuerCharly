@@ -75,6 +75,8 @@ const sendSMS = (mobile, msg_body) => {
         to: mobile,
       })
       .then((message) => console.log(message.sid));
+  } else {
+    console.log("debug sent: " + msg_body);
   }
 };
 
@@ -156,6 +158,33 @@ const splitCourses = async () => {
   }
 };
 
+const SendMissionToTeam = async (teamId, addr, ring) => {
+  // send an sms to all members of team
+  var teamRef = ANGELS.where("teamId", "==", teamId);
+  try {
+    var teamSnapshot = await teamRef.get();
+    if (teamSnapshot.empty) {
+      console.log("found no guest");
+    }
+
+    teamSnapshot.forEach((personDoc) => {
+      var msg =
+        "Hallo " +
+        personDoc.data().first +
+        "! Neue Mission: " +
+        addr.street +
+        " " +
+        addr.number +
+        ". Klingel bei " +
+        ring;
+      var mobile = personDoc.data().mobil;
+      sendSMS(mobile, msg);
+    }); // find mobil number of guest and send sms
+  } catch (err) {
+    console.log("error sending mission to team " + teamId + err);
+  }
+};
+
 // search for course
 // inform all guests that they should come to their hosts address
 const sendMission = async (course) => {
@@ -183,76 +212,37 @@ const sendMission = async (course) => {
       return 0;
     }
   }
-  if (course !== "Vorspeise" || course !== "Hauptspeise" || course !== "Dessert") {
-    console.log('invalid course');
+  if (
+    !(
+      course !== "Vorspeise" ||
+      course !== "Hauptspeise" ||
+      course !== "Dessert"
+    )
+  ) {
+    console.log("invalid course");
     return 0;
-  }
-  else {
-    let db = FDB.collection(course);
-    var docRef = db;
+  } else {
+    var docRef = FDB.collection(course);
     try {
       var snapshot = await docRef.get();
       if (snapshot.empty) {
         console.log("no angles found");
         return 0;
       }
-      await snapshot.forEach(async (team) => {
-        // write message
-        msg = "";
+      await snapshot.forEach(async (doc) => {
+        var hostAddress = doc.data().address;
+        var ring = doc.data().ring;
         // search for all guests -> send guests an SMS with their host's address
         for (var prop in doc.data().guests) {
-          var guestRef = ANGELS.where('teamId', "==", prop);
-          try {
-            var guestSnapshot = await guestRef.get();
-            if (guestSnapshot.empty) {
-              console.log('found no guest')
-            }
-            // find mobil number of guest and send sms 
-          } catch {
-
-          }
+          await SendMissionToTeam(doc.data().guests[prop], hostAddress, ring);
+          numSMS += 1;
         }
-      })
+      });
+      return numSMS;
     } catch (err) {
       console.log("error sending mission");
       return 0;
     }
-  }
-
-  var docRef = ANGELS.where("course", "==", course);
-  try {
-    var snapshot = await docRef.get();
-    if (snapshot.empty) {
-      console.log("Course does not exist - typo", course);
-      return false;
-    } else {
-      snapshot.forEach(async (doc) => {
-        console.log(doc.id, "=>", doc.data());
-        var missNr;
-        if (course === "starter") {
-          missNr = 1;
-        } else if (course === "main") {
-          missNr = 2;
-        } else if (course == "flunky") {
-          missNr = 3;
-        } else if (course === "dessert") {
-          missNr = 4;
-        } else if (course == "bar") {
-        }
-        var msg =
-          "Mission Nr. " +
-          missNr +
-          "\nAdresse: " +
-          doc.address.street +
-          doc.address.number +
-          "\nSuche: "; // FIXME
-      });
-
-      return numSMS;
-    }
-  } catch (err) {
-    console.log("Error send mission", err);
-    return false;
   }
 };
 
@@ -430,7 +420,7 @@ app.post("/mission", async (req, res) => {
   }
   var numSMS = await sendMission(data.course);
   console.log("I sent " + numSMS + " SMS");
-  res.send({ validSecret: true, numSMS: numSms }).status(200);
+  res.send({ validSecret: true }).status(200);
 });
 
 // inform teams about their courses and the allergies of their guests
