@@ -149,9 +149,8 @@ const splitCourses = async () => {
 const sendMission = async (course) => {
   var msg;
   var numSMS = 0;
-  if (course === "Vorspeise") {
-    db = Vorspeise;
-  } else if (course === "Flunkyball") {
+  // course = Flunkyball -> no database needet exept angles to send a message to all participants
+  if (course === "Flunkyball") {
     // exeption
     msg =
       "Sonderauftrag: Begebe dich sofort zum Bohlenplatz. Bring ein GESCHLOSSENES Bier mit!";
@@ -166,17 +165,46 @@ const sendMission = async (course) => {
         sendSMS(person.data().mobil, msg);
         numSMS += 1;
       });
+      return numSMS;
     } catch (err) {
       console.log("error sending flunky");
       return 0;
     }
-  } else if (course === "Hauptspeise") {
-    db = Hauptspeise;
-  } else if (course === "Dessert") {
-    db = Dessert;
-  } else {
-    console.log("no course found");
+  }
+  if (course !== "Vorspeise" || course !== "Hauptspeise" || course !== "Dessert") {
+    console.log('invalid course');
     return 0;
+  }
+  else {
+    let db = FDB.collection(course);
+    var docRef = db;
+    try {
+      var snapshot = await docRef.get();
+      if (snapshot.empty) {
+        console.log("no angles found");
+        return 0;
+      }
+      await snapshot.forEach(async (team) => {
+        // write message
+        msg = "";
+        // search for all guests -> send guests an SMS with their host's address
+        for (var prop in doc.data().guests) {
+          var guestRef = ANGELS.where('teamId', "==", prop);
+          try {
+            var guestSnapshot = await guestRef.get();
+            if (guestSnapshot.empty) {
+              console.log('found no guest')
+            }
+            // find mobil number of guest and send sms 
+          } catch {
+
+          }
+        }
+      })
+    } catch (err) {
+      console.log("error sending mission");
+      return 0;
+    }
   }
 
   var docRef = ANGELS.where("course", "==", course);
