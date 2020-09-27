@@ -7,7 +7,7 @@ const Firestore = require("@google-cloud/firestore");
 const { strict } = require("assert");
 
 // constants
-const PRODUCTION = false; // prevents sending sms and uses localhost
+const PRODUCTION = true; // prevents sending sms and uses localhost
 var VERIFY_MSG =
   "Bitte bestätige über diesen Link deine Handynummer für das Laufgelage: https://charlottepradel.de/verifymobile/";
 
@@ -209,6 +209,28 @@ const sendMission = async (course) => {
       return numSMS;
     } catch (err) {
       console.log("error sending flunky");
+      return 0;
+    }
+  }
+
+  // course = Flunkyball -> no database needet exept angles to send a message to all participants
+  if (course === "Afterparty") {
+    // exeption
+    msg =
+      "Danke für deine Teilnahme! Deine letzte Mission für heute: Komme zum El Leon!";
+    var docRef = ANGELS;
+    try {
+      var snapshot = await docRef.get();
+      if (snapshot.empty) {
+        console.log("no angles found");
+        return 0;
+      }
+      await snapshot.forEach(async (person) => {
+        sendSMS(person.data().mobil, msg);
+      });
+      return numSMS;
+    } catch (err) {
+      console.log("error sending afterparty");
       return 0;
     }
   }
